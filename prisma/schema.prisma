@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Admin user model
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Main hymn model
+model Hymn {
+  id          String   @id @default(cuid())
+  title       String
+  author      String?
+  year        Int?
+
+  // Raw uploaded text
+  rawText     String   @db.Text
+
+  // Processed structure (stored as JSON)
+  structure   Json     // {verses: [{type: 'verse', lines: [...]}], chorus: {...}}
+
+  // Metadata
+  isPublicDomain Boolean @default(false)
+  publisher      String?
+  ccliNumber     String?
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tags        HymnTag[]
+
+  @@index([title])
+  @@index([author])
+}
+
+// Categories/tags for hymns
+model Tag {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  category  String?   // e.g., "season", "theme", "topic"
+  hymns     HymnTag[]
+  createdAt DateTime  @default(now())
+
+  @@index([category])
+}
+
+// Junction table for many-to-many relationship
+model HymnTag {
+  hymn   Hymn   @relation(fields: [hymnId], references: [id], onDelete: Cascade)
+  hymnId String
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId  String
+
+  @@id([hymnId, tagId])
+  @@index([hymnId])
+  @@index([tagId])
+}
