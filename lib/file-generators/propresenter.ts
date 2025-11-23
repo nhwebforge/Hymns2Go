@@ -41,12 +41,7 @@ function generateProPresenter6XML(
   if (includeTitleSlide) {
     slideGroups.push({
       label: 'Intro',
-      slides: [
-        {
-          text: hymnTitle,
-          label: '',
-        },
-      ],
+      slides: [hymnTitle],
       groupColor: '#B3A824', // Yellowish color for intro
     });
   }
