@@ -1,12 +1,11 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db/prisma';
 
-export default async function HymnsPage({
-  searchParams,
-}: {
+export default async function HymnsPage(props: {
   searchParams: Promise<{ page?: string; search?: string; tag?: string }>;
 }) {
-  const params = await searchParams;
+  const searchParams = await props.searchParams;
+  const params = searchParams;
   const page = parseInt(params.page || '1');
   const search = params.search || '';
   const tagSlug = params.tag || '';
