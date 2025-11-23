@@ -34,10 +34,18 @@ export default async function HymnsPage(props: {
   const [hymns, total, currentTag, allTags] = await Promise.all([
     prisma.hymn.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        title: true,
+        author: true,
         tags: {
-          include: {
-            tag: true,
+          select: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },
@@ -52,6 +60,11 @@ export default async function HymnsPage(props: {
       ? prisma.tag.findUnique({ where: { slug: tagSlug } })
       : Promise.resolve(null),
     prisma.tag.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+      },
       orderBy: {
         name: 'asc',
       },
