@@ -76,6 +76,8 @@ model Hymn {
   @@index([author])
   @@index([firstLine])
   @@index([hymnalCode])
+  @@index([createdAt])
+  @@index([updatedAt])
 }
 
 // Categories/tags for hymns
@@ -88,6 +90,7 @@ model Tag {
   createdAt DateTime  @default(now())
 
   @@index([category])
+  @@index([name])
 }
 
 // Junction table for many-to-many relationship

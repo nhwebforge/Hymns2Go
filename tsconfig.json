@@ -32,8 +32,11 @@
   ],
   "exclude": [
     "node_modules",
-    "scripts",
-    "decode-pro7.js",
-    "dev.sh"
+    ".next",
+    "out",
+    "scripts/**/*",
+    "*.js",
+    "*.sh",
+    "prisma/migrations"
   ]
 }
