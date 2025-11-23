@@ -1,63 +1,108 @@
 'use client';
 
-import { useState } from 'react';
-import { HymnStructure, formatAsSlides } from '@/lib/hymn-processor/parser';
+import { useState, useMemo } from 'react';
+import { HymnStructure, formatAsSlides, stripPunctuation } from '@/lib/hymn-processor/parser';
 
 interface HymnPreviewProps {
   structure: HymnStructure;
   title: string;
+  linesPerSlide: number;
+  includeTitleSlide: boolean;
+  includeVerseNumbers: boolean;
+  stripPunctuation: boolean;
 }
 
-export default function HymnPreview({ structure, title }: HymnPreviewProps) {
-  const [linesPerSlide, setLinesPerSlide] = useState(2);
-  const slides = formatAsSlides(structure, linesPerSlide);
+export default function HymnPreview({
+  structure,
+  title,
+  linesPerSlide,
+  includeTitleSlide,
+  includeVerseNumbers,
+  stripPunctuation: shouldStripPunctuation
+}: HymnPreviewProps) {
+  const slides = useMemo(() => formatAsSlides(structure, linesPerSlide), [structure, linesPerSlide]);
+
+  // Track which sections we've seen to only show label on first slide
+  const seenSections = new Set<string>();
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Preview</h2>
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600">Lines per slide:</label>
-          <select
-            value={linesPerSlide}
-            onChange={(e) => setLinesPerSlide(parseInt(e.target.value))}
-            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-            <option value={3}>3</option>
-            <option value={4}>4</option>
-            <option value={6}>6</option>
-          </select>
-        </div>
       </div>
 
       <div className="space-y-4">
         {/* Title Slide */}
-        <div className="bg-gray-900 text-white rounded-lg p-8 flex items-center justify-center min-h-[200px]">
-          <h3 className="text-3xl font-bold text-center">{title}</h3>
-        </div>
+        {includeTitleSlide && (
+          <div className="bg-gray-900 text-white rounded-lg p-8 flex items-center justify-center min-h-[200px]">
+            <h3 className="text-3xl font-bold text-center">{title}</h3>
+          </div>
+        )}
 
         {/* Content Slides */}
-        {slides.map((slide, index) => (
-          <div
-            key={index}
-            className="bg-gray-900 text-white rounded-lg p-8 flex items-center justify-center min-h-[200px]"
-          >
-            <div className="text-center">
-              {slide.lines.map((line, lineIndex) => (
-                <p key={lineIndex} className="text-2xl mb-2">
-                  {line}
-                </p>
-              ))}
+        {slides.map((slide, index) => {
+          // Determine if we should show section label
+          let sectionKey: string | null = null;
+          let sectionLabel = '';
+
+          if (slide.sectionType === 'verse' && slide.sectionNumber) {
+            sectionKey = `verse-${slide.sectionNumber}`;
+            sectionLabel = `Verse ${slide.sectionNumber}`;
+          } else if (slide.sectionType === 'chorus') {
+            sectionKey = 'chorus';
+            sectionLabel = 'Refrain';
+          } else if (slide.sectionType === 'bridge') {
+            sectionKey = 'bridge';
+            sectionLabel = 'Bridge';
+          }
+
+          const showSectionLabel = sectionKey && !seenSections.has(sectionKey);
+          if (sectionKey && !seenSections.has(sectionKey)) {
+            seenSections.add(sectionKey);
+          }
+
+          // Prepare slide text with verse number/refrain prefix if needed
+          let slideLines = [...slide.lines];
+          if (includeVerseNumbers) {
+            if (slide.sectionType === 'verse' && slide.sectionNumber && showSectionLabel) {
+              // Prepend verse number to first line
+              slideLines[0] = `${slide.sectionNumber} ${slideLines[0]}`;
+            } else if (slide.sectionType === 'chorus' && showSectionLabel) {
+              // Prepend "Refrain: " to first line of chorus
+              slideLines[0] = `Refrain: ${slideLines[0]}`;
+            }
+          }
+
+          // Apply punctuation stripping if requested
+          if (shouldStripPunctuation) {
+            slideLines = slideLines.map(line => stripPunctuation(line));
+          }
+
+          return (
+            <div key={index}>
+              {/* Section header - only on first slide of each section */}
+              {showSectionLabel && (
+                <div className="text-sm font-medium text-gray-600 mb-2 px-2">
+                  {sectionLabel}
+                </div>
+              )}
+              <div className="bg-gray-900 text-white rounded-lg p-8 flex items-center justify-center min-h-[200px]">
+                <div className="text-center">
+                  {slideLines.map((line, lineIndex) => (
+                    <p key={lineIndex} className="text-2xl mb-2">
+                      {line}
+                    </p>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-6 pt-6 border-t text-sm text-gray-600">
         <p>
-          Total slides: {slides.length + 1} (including title slide)
+          Total slides: {(includeTitleSlide ? 1 : 0) + slides.length}
         </p>
       </div>
     </div>

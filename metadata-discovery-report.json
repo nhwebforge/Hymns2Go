@@ -1,0 +1,862 @@
+{
+  "scanDate": "2025-11-23T14:13:39.115Z",
+  "hymnals": [
+    {
+      "code": "CAH2000",
+      "name": "Complete Anglican Hymns Old and New"
+    },
+    {
+      "code": "AM2013",
+      "name": "Ancient & Modern 2013"
+    }
+  ],
+  "fields": [
+    {
+      "fieldName": "First Line",
+      "exampleValue": "Abide with me; fast falls the eventide",
+      "count": 411,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Title",
+      "exampleValue": "Abide with me",
+      "count": 411,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Author",
+      "exampleValue": "Henry Francis Lyte, 1793-1847",
+      "count": 335,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Meter",
+      "exampleValue": "10 10 10 10",
+      "count": 728,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Language",
+      "exampleValue": "English",
+      "count": 411,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Publication Date",
+      "exampleValue": "2000",
+      "count": 411,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Scripture",
+      "exampleValue": "1 Corinthians 15:55-57; 1 John 4:12-13; Hebrews 13:6; James 1:17; John 15:4-5; Luke 24:2; Malachi 3:",
+      "count": 350,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Topic",
+      "exampleValue": "Evening; Hope and Consolation; Protection",
+      "count": 401,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Name",
+      "exampleValue": "EVENTIDE",
+      "count": 411,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Composer",
+      "exampleValue": "William Henry Monk, 1823-1889",
+      "count": 313,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Key",
+      "exampleValue": "E♭ Major",
+      "count": 411,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Translator",
+      "exampleValue": "John Mason Neale, 1818-1866",
+      "count": 80,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "4"
+    },
+    {
+      "fieldName": "Harmonizer",
+      "exampleValue": "Michael Praetorius, 1571-1621 (alt.)",
+      "count": 18,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "4"
+    },
+    {
+      "fieldName": "Source",
+      "exampleValue": "German carol melody; Harmonies based on Michael Praetorius",
+      "count": 180,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "4"
+    },
+    {
+      "fieldName": "Translator (from German)",
+      "exampleValue": "Robert Bridges, 1844-1930 (alt.)",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "5"
+    },
+    {
+      "fieldName": "Translator (from Latin)",
+      "exampleValue": "J. Heerman, 1585-1647",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "5"
+    },
+    {
+      "fieldName": "Copyright",
+      "exampleValue": "© Novello & Co. Ltd.",
+      "count": 192,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "13"
+    },
+    {
+      "fieldName": "Notes",
+      "exampleValue": "Now Public Domain",
+      "count": 133,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "13"
+    },
+    {
+      "fieldName": "Latin Title",
+      "exampleValue": "Gloria, laus et honor",
+      "count": 13,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "14"
+    },
+    {
+      "fieldName": "Refrain First Line",
+      "exampleValue": "All glory, laud and honour",
+      "count": 28,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "14"
+    },
+    {
+      "fieldName": "Adapter",
+      "exampleValue": "Michael Forster, b. 1946",
+      "count": 25,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "16b"
+    },
+    {
+      "fieldName": "German Title",
+      "exampleValue": "Meine Hoffnung stehet feste",
+      "count": 3,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "19"
+    },
+    {
+      "fieldName": "Paraphraser",
+      "exampleValue": "Robert Bridges, 1844-1930 (alt.)",
+      "count": 8,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "19"
+    },
+    {
+      "fieldName": "Composer (attributed to)",
+      "exampleValue": "Louis Bourgeois, c. 1510-c. 1561",
+      "count": 5,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "21"
+    },
+    {
+      "fieldName": "Arranger",
+      "exampleValue": "Adrian Vernon Fish",
+      "count": 55,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "25b"
+    },
+    {
+      "fieldName": "Author (vs. 1-4)",
+      "exampleValue": "John Newton, 1725-1807 (alt.)",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "29"
+    },
+    {
+      "fieldName": "Author (v. 5)",
+      "exampleValue": "John Rees, 1828-1900",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "29"
+    },
+    {
+      "fieldName": "Arranger (Piano)",
+      "exampleValue": "Andrew Moore",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "33"
+    },
+    {
+      "fieldName": "Arranger (version 1)",
+      "exampleValue": "Charles Wood, 1866-1926",
+      "count": 2,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "36"
+    },
+    {
+      "fieldName": "Arranger (version 2)",
+      "exampleValue": "Richard Lloyd",
+      "count": 2,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "36"
+    },
+    {
+      "fieldName": "Author (attributed to)",
+      "exampleValue": "Jacopone da Todi, d. 1306",
+      "count": 6,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "51"
+    },
+    {
+      "fieldName": "Author (vs. 1 and 3)",
+      "exampleValue": "John Keble, 1792-1866",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "77"
+    },
+    {
+      "fieldName": "Italian Title",
+      "exampleValue": "Discendi, amor santo",
+      "count": 2,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "114"
+    },
+    {
+      "fieldName": "Arranger (alternative setting)",
+      "exampleValue": "Andrew Moore",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "135"
+    },
+    {
+      "fieldName": "Arranger (alternative refrain)",
+      "exampleValue": "Colin Hand",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "148"
+    },
+    {
+      "fieldName": "Author 9v. 3)",
+      "exampleValue": "William E. Hickson, 1803-1870 (alt.)",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "230"
+    },
+    {
+      "fieldName": "Author (v. 1)",
+      "exampleValue": "Reginald Heber, 1783-1826",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "232"
+    },
+    {
+      "fieldName": "Author (v. 2)",
+      "exampleValue": "Richard Whately, 1787-1863",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "232"
+    },
+    {
+      "fieldName": "Alterer",
+      "exampleValue": "Christopher Wordsworth, 1807-1885",
+      "count": 4,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "267"
+    },
+    {
+      "fieldName": "Greek Title",
+      "exampleValue": "Mnaōeo Christe",
+      "count": 2,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "412a"
+    },
+    {
+      "fieldName": "Incipit",
+      "exampleValue": "12351 76567 12342",
+      "count": 5,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "446a"
+    },
+    {
+      "fieldName": "ONE LICENSE",
+      "exampleValue": "41296",
+      "count": 3,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "468"
+    },
+    {
+      "fieldName": "Versifier",
+      "exampleValue": "John Mason Neale, 1818-1866",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "480"
+    },
+    {
+      "fieldName": "Author (v. 3)",
+      "exampleValue": "Edward Osler, 1798-1863",
+      "count": 1,
+      "hymnalCode": "CAH2000",
+      "hymnNumber": "570"
+    },
+    {
+      "fieldName": "First Line",
+      "exampleValue": "Awake, my soul, and with the sun",
+      "count": 432,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "1"
+    },
+    {
+      "fieldName": "Author",
+      "exampleValue": "Thomas Ken (1637-1711) (alt.)",
+      "count": 406,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "1"
+    },
+    {
+      "fieldName": "Meter",
+      "exampleValue": "LM",
+      "count": 832,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "1"
+    },
+    {
+      "fieldName": "Language",
+      "exampleValue": "English",
+      "count": 432,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "1"
+    },
+    {
+      "fieldName": "Publication Date",
+      "exampleValue": "2013",
+      "count": 432,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "1"
+    },
+    {
+      "fieldName": "Scripture",
+      "exampleValue": "Psalm 57:8-9; Ephesians 5:6-20; Colossians 4:5-6",
+      "count": 431,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "1"
+    },
+    {
+      "fieldName": "Topic",
+      "exampleValue": "Commitment; Discipleship; Eternal Life; Morning; Proper 6: Year C; Self-offering; Vocation; Work",
+      "count": 432,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "1"
+    },
+    {
+      "fieldName": "Name",
+      "exampleValue": "MORNING HYMN",
+      "count": 432,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "1"
+    },
+    {
+      "fieldName": "Composer",
+      "exampleValue": "François Hyppolite Barthélémon (1741-1808)",
+      "count": 249,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "1"
+    },
+    {
+      "fieldName": "Key",
+      "exampleValue": "G Major",
+      "count": 430,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "1"
+    },
+    {
+      "fieldName": "Harmonizer",
+      "exampleValue": "William Henry Havergal (1793-1870)",
+      "count": 59,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Source",
+      "exampleValue": "Melody from Werner's Choralbuch Leipzig, 1815",
+      "count": 255,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Audio recording",
+      "exampleValue": "Piano Harmony (auto-generated)",
+      "count": 16,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "2"
+    },
+    {
+      "fieldName": "Arranger",
+      "exampleValue": "David Iliff (b. 1939)",
+      "count": 45,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "3"
+    },
+    {
+      "fieldName": "Copyright",
+      "exampleValue": "Arrangement: © David Iliff / The Jubilate Group. Administered by The Jubilate Group, Kitley House, S",
+      "count": 313,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "3"
+    },
+    {
+      "fieldName": "ONE LICENSE",
+      "exampleValue": "29329",
+      "count": 41,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "6"
+    },
+    {
+      "fieldName": "German Title",
+      "exampleValue": "Beim frühen Morgenlicht",
+      "count": 9,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "9"
+    },
+    {
+      "fieldName": "Translator",
+      "exampleValue": "Edward Caswall (1814-1878) (alt.)",
+      "count": 64,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "9"
+    },
+    {
+      "fieldName": "Latin Title",
+      "exampleValue": "Labente jam solis rota",
+      "count": 22,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "11"
+    },
+    {
+      "fieldName": "Notes",
+      "exampleValue": "This melody may be sung as a round.",
+      "count": 101,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "15"
+    },
+    {
+      "fieldName": "Author (v. 1)",
+      "exampleValue": "Reginald Heber (1783-1826)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "16"
+    },
+    {
+      "fieldName": "Author (v. 2)",
+      "exampleValue": "Richard Whateley (1787 - 1863)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "16"
+    },
+    {
+      "fieldName": "Arranger (last verse)",
+      "exampleValue": "Christopher Robinson (b. 1936)",
+      "count": 3,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "24"
+    },
+    {
+      "fieldName": "Adapter (melody)",
+      "exampleValue": "Michael Praetorius (1571-1621)",
+      "count": 3,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "32"
+    },
+    {
+      "fieldName": "Composer (descant)",
+      "exampleValue": "David Iliff (b. 1939)",
+      "count": 19,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "36"
+    },
+    {
+      "fieldName": "Refrain First Line",
+      "exampleValue": "Rejoice! Rejoice! Emmanuel",
+      "count": 29,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "45"
+    },
+    {
+      "fieldName": "Composer (melody)",
+      "exampleValue": "Philipp Nicolai (1556-1608)",
+      "count": 17,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "54"
+    },
+    {
+      "fieldName": "Adapter and Harmonizer",
+      "exampleValue": "Johann Sebastian Bach (1685-1750)",
+      "count": 2,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "54"
+    },
+    {
+      "fieldName": "Adapter",
+      "exampleValue": "William Henry Havergal (1793-1870)",
+      "count": 23,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "57"
+    },
+    {
+      "fieldName": "Greek Title",
+      "exampleValue": "Μεyα καi παράδοξον θαυμα τετέλεσται",
+      "count": 7,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "58"
+    },
+    {
+      "fieldName": "Incipit",
+      "exampleValue": "33335 54313 3233",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "59"
+    },
+    {
+      "fieldName": "Composer (attributed to)",
+      "exampleValue": "John Francis Wade (c. 1711-1786)",
+      "count": 2,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "78"
+    },
+    {
+      "fieldName": "Arranger (vv. 6-7)",
+      "exampleValue": "David Willcocks (b. 1919)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "78"
+    },
+    {
+      "fieldName": "Arranger (last stanza)",
+      "exampleValue": "Thomas Armstrong (1898-1994)",
+      "count": 6,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "79"
+    },
+    {
+      "fieldName": "Basque Title",
+      "exampleValue": "Birjina gaztetto bat zegoen",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "85"
+    },
+    {
+      "fieldName": "Paraphraser",
+      "exampleValue": "Sabine Baring-Gould (1834-1924)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "85"
+    },
+    {
+      "fieldName": "Abridger",
+      "exampleValue": "William Henry Monk (1823-1889)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "94"
+    },
+    {
+      "fieldName": "Composer (chorale)",
+      "exampleValue": "Conrad Kocher (1786-1872)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "94"
+    },
+    {
+      "fieldName": "Alterer",
+      "exampleValue": "Johann Adolf Schlegel (1721-1793)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "100"
+    },
+    {
+      "fieldName": "CCLI Number",
+      "exampleValue": "4956578",
+      "count": 21,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "102"
+    },
+    {
+      "fieldName": "Harmonizer (basis)",
+      "exampleValue": "William Henry Monk (1823-1889)",
+      "count": 2,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "102"
+    },
+    {
+      "fieldName": "Composer (melody, adapted from)",
+      "exampleValue": "Johann Michael Haydn (1737-1806)",
+      "count": 3,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "108"
+    },
+    {
+      "fieldName": "Composer (possible)",
+      "exampleValue": "Martin Herbst (1654-1681)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "121"
+    },
+    {
+      "fieldName": "Harmonizer (attributed to)",
+      "exampleValue": "William Henry Monk (1823-1889)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "135"
+    },
+    {
+      "fieldName": "Welsh Title",
+      "exampleValue": "Dyma gariad fel y moroedd",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "143"
+    },
+    {
+      "fieldName": "Author (ascribed to)",
+      "exampleValue": "Thomas à Kempis (c. 1379-1471)",
+      "count": 2,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "149"
+    },
+    {
+      "fieldName": "Composer (version)",
+      "exampleValue": "Michael Fleming (1928-2006)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "151"
+    },
+    {
+      "fieldName": "Contributor",
+      "exampleValue": "Thomas Tallis",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "154"
+    },
+    {
+      "fieldName": "Editor",
+      "exampleValue": "John Wilson (1905-1992)",
+      "count": 4,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "154"
+    },
+    {
+      "fieldName": "Harmonizer (probable)",
+      "exampleValue": "William Henry Monk (1823-1889)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "175"
+    },
+    {
+      "fieldName": "Collector",
+      "exampleValue": "John Alexander Fuller Maitland (1856-1936)",
+      "count": 4,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "204"
+    },
+    {
+      "fieldName": "Composer (Solemnes version)",
+      "exampleValue": "E. W. Goldsmith (1860-1934)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "213"
+    },
+    {
+      "fieldName": "French Title",
+      "exampleValue": "A toi la gloire, O Ressuscité",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "218"
+    },
+    {
+      "fieldName": "Composer (melody, probably)",
+      "exampleValue": "ROBERT WILLIAMS (1782-1818)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "228"
+    },
+    {
+      "fieldName": "Italian Title",
+      "exampleValue": "Discendi, amor santo",
+      "count": 2,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "238a"
+    },
+    {
+      "fieldName": "Composer (melody and bass)",
+      "exampleValue": "Orlando Gibbons (1583-1625)",
+      "count": 7,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "244"
+    },
+    {
+      "fieldName": "Composer (probable)",
+      "exampleValue": "William Croft (1678-1727)",
+      "count": 2,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "268"
+    },
+    {
+      "fieldName": "Author (attributed to)",
+      "exampleValue": "St Patrick (372-466)",
+      "count": 2,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "277a"
+    },
+    {
+      "fieldName": "Contributor (melody and bass)",
+      "exampleValue": "William Croft (1678-1727)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "278"
+    },
+    {
+      "fieldName": "Contributor (melody)",
+      "exampleValue": "Louis Bourgeois (c. 1510-1561)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "317a"
+    },
+    {
+      "fieldName": "Transcriber",
+      "exampleValue": "Thomas Olivers (1725-1799)",
+      "count": 3,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "341"
+    },
+    {
+      "fieldName": "Russian Title",
+      "exampleValue": "Со святыми упокой, Христе",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "351"
+    },
+    {
+      "fieldName": "Harmonizer (alleluias)",
+      "exampleValue": "Peter Stevens (b. 1987)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "374"
+    },
+    {
+      "fieldName": "Author (stanzas 1, 4)",
+      "exampleValue": "Mary Artemisia Lathbury (1841-1913)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "378"
+    },
+    {
+      "fieldName": "Author (stanzas 2, 3)",
+      "exampleValue": "Alexander Groves (1842-1909)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "378"
+    },
+    {
+      "fieldName": "Xhosa Title",
+      "exampleValue": "Mazenziwe 'ntando yakho.",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "412"
+    },
+    {
+      "fieldName": "Teacher",
+      "exampleValue": "George Mxadana",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "412"
+    },
+    {
+      "fieldName": "Versifier",
+      "exampleValue": "Charles William Humphreys (1840-1921)",
+      "count": 3,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "444"
+    },
+    {
+      "fieldName": "Composer (setting)",
+      "exampleValue": "Heinrich Isaac (C. 1450-1527)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "459"
+    },
+    {
+      "fieldName": "Author (sometimes ascribed to)",
+      "exampleValue": "Pope John XXII (1249-1334)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "462"
+    },
+    {
+      "fieldName": "Composer (melody, attributed to)",
+      "exampleValue": "M. C. H. Davis",
+      "count": 2,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "571b"
+    },
+    {
+      "fieldName": "Collector and Arranger",
+      "exampleValue": "Ralph Vaughan Williams (1872-1958)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "582"
+    },
+    {
+      "fieldName": "Irish Title",
+      "exampleValue": "Rop tú mo baile, a Choimdiu cride:",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "595"
+    },
+    {
+      "fieldName": "Arranger (for manuals)",
+      "exampleValue": "Michael Fleming (1928-2006)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "621b"
+    },
+    {
+      "fieldName": "Composer (melody version)",
+      "exampleValue": "William Boyce (1711-1779)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "634a"
+    },
+    {
+      "fieldName": "",
+      "exampleValue": "Timothy Richard Matthews (1826-1910)",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "811"
+    },
+    {
+      "fieldName": "Danish Title",
+      "exampleValue": "Igjennem Nat og Trængsel",
+      "count": 1,
+      "hymnalCode": "AM2013",
+      "hymnNumber": "813"
+    }
+  ]
+}

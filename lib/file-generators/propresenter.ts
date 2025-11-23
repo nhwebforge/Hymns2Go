@@ -1,109 +1,173 @@
 import { Slide } from '../hymn-processor/parser';
+import { ProPresenter6Builder } from 'propresenter-parser';
 
 export interface ProPresenterOptions {
-  version?: 6 | 7; // ProPresenter version
+  version?: 6 | 7;
   category?: string;
+  author?: string;
+  publisher?: string;
+  ccliNumber?: string;
+  copyrightYear?: number;
+  includeTitleSlide?: boolean;
+  includeVerseNumbers?: boolean;
 }
 
 /**
- * Generate ProPresenter 6 XML format
+ * Generate ProPresenter 6 XML format using propresenter-parser library
  */
 function generateProPresenter6XML(
   slides: Slide[],
   hymnTitle: string,
   options: ProPresenterOptions
 ): string {
-  const { category = 'Hymn' } = options;
+  const {
+    category = 'Hymn',
+    author,
+    publisher,
+    ccliNumber,
+    copyrightYear,
+    includeTitleSlide = false,
+    includeVerseNumbers = false,
+  } = options;
 
-  // Build slides XML
-  const slidesXML = slides.map((slide, index) => {
-    const linesXML = slide.lines.map((line, lineIndex) => {
-      return `          <RVTextElement displayDelay="0" displayName="Default" locked="0" persistent="0" typeID="0" fromTemplate="0" bezelRadius="0" drawingFill="0" drawingShadow="1" drawingStroke="0" fillColor="0 0 0 0" rotation="0" source="" adjustsHeightToFit="0" verticalAlignment="0" RTFData="${escapeXML(line)}" revealType="0">
-            <_-RVRect3D-_position x="10" y="10" z="0" width="1004" height="748" />
-            <_-D-_serializedShadow containerClass="NSMutableDictionary">
-              <NSNumber containerClass="NSNumber" key="shadowBlurRadius">10</NSNumber>
-              <NSMutableString containerClass="NSMutableString" key="shadowColor">{0, 0, 0, 1}</NSMutableString>
-              <NSMutableString containerClass="NSMutableString" key="shadowOffset">{2, -2}</NSMutableString>
-            </_-D-_serializedShadow>
-            <stroke containerClass="NSMutableDictionary" />
-          </RVTextElement>`;
-    }).join('\n');
+  // Group slides by section
+  const slideGroups: Array<{
+    label: string;
+    slides: string[];
+    groupColor?: string;
+  }> = [];
 
-    return `    <RVSlideGrouping name="${escapeXML(slide.sectionType)}" uuid="${generateUUID()}" color="0 0 0 0" serialization-array-index="${index}">
-      <RVDisplaySlide backgroundColor="0 0 0 1" enabled="1" highlightColor="0 0 0 0" hotKey="" label="" notes="" slideType="1" sort_index="${index}" UUID="${generateUUID()}" drawingBackgroundColor="0" chordChartPath="" serialization-array-index="${index}">
-        <cues containerClass="NSMutableArray" />
-        <displayElements containerClass="NSMutableArray">
-${linesXML}
-        </displayElements>
-      </RVDisplaySlide>
-    </RVSlideGrouping>`;
-  }).join('\n');
+  // Add title slide if requested
+  if (includeTitleSlide) {
+    slideGroups.push({
+      label: 'Intro',
+      slides: [
+        {
+          text: hymnTitle,
+          label: '',
+        },
+      ],
+      groupColor: '#B3A824', // Yellowish color for intro
+    });
+  }
 
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<RVPresentationDocument height="768" width="1024" versionNumber="600" docType="0" creatorCode="1349676880" lastDateUsed="${new Date().toISOString()}" usedCount="0" category="${escapeXML(category)}" resourcesDirectory="" backgroundColor="0 0 0 1" drawingBackgroundColor="0" notes="" artist="" author="" album="" title="${escapeXML(hymnTitle)}" CCLIDisplay="0" CCLIArtistCredits="" CCLISongTitle="" CCLIPublisher="" CCLICopyrightInfo="" CCLILicenseNumber="" chordChartPath="">
-  <timeline timeOffSet="0" selectedMediaTrackIndex="0" unitOfMeasure="60" duration="0" loop="0">
-    <timeCues containerClass="NSMutableArray" />
-    <mediaTracks containerClass="NSMutableArray" />
-  </timeline>
-  <bibleReference containerClass="NSMutableDictionary" />
-  <_-RVProTransitionObject-_transitionObject transitionType="-1" transitionDuration="1" motionEnabled="0" motionDuration="20" motionSpeed="100" />
-  <groups containerClass="NSMutableArray">
-${slidesXML}
-  </groups>
-  <arrangements containerClass="NSMutableArray" />
-</RVPresentationDocument>`;
-}
+  // Group slides by section
+  const sectionGroups: Record<
+    string,
+    { slides: string[]; color: string }
+  > = {};
 
-/**
- * Generate ProPresenter 7 format (similar to v6 but with some differences)
- */
-function generateProPresenter7XML(
-  slides: Slide[],
-  hymnTitle: string,
-  options: ProPresenterOptions
-): string {
-  // ProPresenter 7 uses a very similar format to v6
-  // For now, we'll use the same generator
-  // In production, you might want to adjust for v7 specific features
-  return generateProPresenter6XML(slides, hymnTitle, options);
+  // Colors for verse groups (cycling pattern) - using blue shades
+  const verseColors = [
+    '#0077CC',
+    '#0059A3',
+    '#003C66',
+    '#0068B3',
+    '#004A80',
+  ];
+
+  let verseColorIndex = 0;
+
+  slides.forEach((slide) => {
+    const sectionKey =
+      slide.sectionType === 'verse' && slide.sectionNumber
+        ? `Verse ${slide.sectionNumber}`
+        : slide.sectionType === 'chorus'
+        ? 'Refrain'
+        : slide.sectionType === 'bridge'
+        ? 'Bridge'
+        : 'Other';
+
+    const isFirstSlideInSection = !sectionGroups[sectionKey];
+
+    if (!sectionGroups[sectionKey]) {
+      // Assign color - use cycling colors for verses, gray for others
+      const color = sectionKey.startsWith('Verse')
+        ? verseColors[verseColorIndex++ % verseColors.length]
+        : '#808080';
+
+      sectionGroups[sectionKey] = { slides: [], color };
+    }
+
+    // Prepare slide text
+    let slideText = slide.lines.join('\n');
+
+    // Prepend verse number or refrain prefix if requested
+    // Only add to the FIRST slide of each section
+    if (includeVerseNumbers && isFirstSlideInSection) {
+      const lines = slide.lines;
+      if (slide.sectionType === 'verse' && slide.sectionNumber) {
+        // Add verse number to the first line
+        slideText = `${slide.sectionNumber} ${lines[0]}${
+          lines.length > 1 ? '\n' + lines.slice(1).join('\n') : ''
+        }`;
+      } else if (slide.sectionType === 'chorus') {
+        // Add "Refrain: " to the first line
+        slideText = `Refrain: ${lines[0]}${
+          lines.length > 1 ? '\n' + lines.slice(1).join('\n') : ''
+        }`;
+      }
+    }
+
+    sectionGroups[sectionKey].slides.push(slideText);
+  });
+
+  // Convert to slide groups array
+  Object.entries(sectionGroups).forEach(([sectionName, sectionData]) => {
+    slideGroups.push({
+      label: sectionName,
+      slides: sectionData.slides,
+      groupColor: sectionData.color,
+    });
+  });
+
+  // Build ProPresenter 6 file using the library
+  // Note: Pro6 doesn't support per-slide formatting, so title slide and regular slides
+  // will have the same formatting.
+  const xmlOutput = ProPresenter6Builder({
+    properties: {
+      CCLISongTitle: hymnTitle,
+      CCLIAuthor: author || '',
+      CCLIArtistCredits: '',
+      CCLIPublisher: publisher || '',
+      CCLICopyrightYear: copyrightYear || 0,
+      CCLISongNumber: ccliNumber ? parseInt(ccliNumber) : 0,
+      CCLIDisplay: false,
+      category: category,
+      height: 1080,
+      width: 1920,
+    },
+    slideGroups: slideGroups,
+    slideTextFormatting: {
+      fontName: 'Helvetica',
+      textSize: 140,
+      textColor: { r: 255, g: 255, b: 255 }, // White
+      textPadding: 100,
+      textShadow: {
+        enabled: true,
+        angle: 315,
+        color: { r: 0, g: 0, b: 0 },
+        length: 5,
+        radius: 5,
+      },
+    },
+  });
+
+  return xmlOutput;
 }
 
 /**
  * Main export function
+ * Note: ProPresenter 7 uses Protocol Buffers (binary format), not XML.
+ * We only support ProPresenter 6 XML format, which is still compatible with Pro7
+ * via import/conversion.
  */
 export function generateProPresenter(
   slides: Slide[],
   hymnTitle: string,
   options: ProPresenterOptions = {}
 ): string {
-  const { version = 6 } = options;
-
-  if (version === 7) {
-    return generateProPresenter7XML(slides, hymnTitle, options);
-  }
-
+  // Always generate Pro6 format (XML)
+  // Pro7 uses Protocol Buffers which requires binary generation
   return generateProPresenter6XML(slides, hymnTitle, options);
-}
-
-/**
- * Escape XML special characters
- */
-function escapeXML(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}
-
-/**
- * Generate a UUID (simple version)
- */
-function generateUUID(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
 }

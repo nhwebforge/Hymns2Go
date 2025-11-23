@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { parseHymnText, formatAsSlides, type HymnStructure } from '@/lib/hymn-processor/parser';
 
 export default function UploadHymnPage() {
   const router = useRouter();
+  const [step, setStep] = useState<'form' | 'preview'>('form');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [parsedStructure, setParsedStructure] = useState<HymnStructure | null>(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -43,8 +46,25 @@ export default function UploadHymnPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePreview = (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
+    try {
+      // Parse the hymn text
+      const structure = parseHymnText(formData.rawText);
+      setParsedStructure(structure);
+      setStep('preview');
+    } catch (err: any) {
+      setError(err.message || 'Failed to parse hymn text');
+    }
+  };
+
+  const handleBackToForm = () => {
+    setStep('form');
+  };
+
+  const handleConfirmSave = async () => {
     setLoading(true);
     setError('');
     setSuccess(false);
@@ -115,7 +135,8 @@ export default function UploadHymnPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6">
+      {step === 'form' && (
+        <form onSubmit={handlePreview} className="bg-white shadow rounded-lg p-6">
         <div className="space-y-6">
           {/* Title */}
           <div>
@@ -302,11 +323,105 @@ export default function UploadHymnPage() {
               disabled={loading}
               className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Uploading...' : 'Upload Hymn'}
+              Preview Hymn
             </button>
           </div>
         </div>
       </form>
+      )}
+
+      {step === 'preview' && parsedStructure && (
+        <div className="space-y-6">
+          {/* Preview Section */}
+          <div className="bg-white shadow rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Preview & Edit</h2>
+            <p className="text-gray-600 mb-6">
+              Review the parsed hymn structure below. You can edit the raw text if needed before saving.
+            </p>
+
+            {/* Editable Raw Text */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Hymn Text
+              </label>
+              <textarea
+                value={formData.rawText}
+                onChange={(e) => {
+                  setFormData(prev => ({ ...prev, rawText: e.target.value }));
+                  try {
+                    const newStructure = parseHymnText(e.target.value);
+                    setParsedStructure(newStructure);
+                    setError('');
+                  } catch (err: any) {
+                    setError(err.message || 'Failed to parse hymn text');
+                  }
+                }}
+                rows={12}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm font-mono"
+              />
+            </div>
+
+            {/* Slide Preview */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Slide Preview (2 lines per slide)</h3>
+              <div className="space-y-4">
+                {/* Title Slide */}
+                <div className="bg-gray-900 text-white rounded-lg p-8 flex items-center justify-center min-h-[200px]">
+                  <h3 className="text-3xl font-bold text-center">{formData.title}</h3>
+                </div>
+
+                {/* Content Slides */}
+                {formatAsSlides(parsedStructure, 2).map((slide, index) => (
+                  <div key={index}>
+                    {slide.sectionNumber && (
+                      <div className="text-sm font-medium text-gray-600 mb-2 px-2">
+                        {slide.sectionType === 'verse' ? `Verse ${slide.sectionNumber}` :
+                         slide.sectionType === 'chorus' ? 'Chorus' :
+                         slide.sectionType === 'bridge' ? 'Bridge' :
+                         'Other'}
+                      </div>
+                    )}
+                    <div className="bg-gray-900 text-white rounded-lg p-8 flex items-center justify-center min-h-[200px]">
+                      <div className="text-center">
+                        {slide.lines.map((line, lineIndex) => (
+                          <p key={lineIndex} className="text-2xl mb-2">
+                            {line}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 pt-6 border-t text-sm text-gray-600">
+                <p>
+                  Total slides: {formatAsSlides(parsedStructure, 2).length + 1} (including title slide)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-3 bg-white shadow rounded-lg p-6">
+            <button
+              type="button"
+              onClick={handleBackToForm}
+              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            >
+              Back to Form
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirmSave}
+              disabled={loading}
+              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Saving...' : 'Confirm & Save Hymn'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

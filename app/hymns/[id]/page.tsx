@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db/prisma';
 import { notFound } from 'next/navigation';
 import { HymnStructure } from '@/lib/hymn-processor/parser';
-import DownloadOptions from '@/components/public/DownloadOptions';
-import HymnPreview from '@/components/public/HymnPreview';
+import HymnViewClient from '@/components/public/HymnViewClient';
 
 export default async function HymnDetailPage({
   params,
@@ -27,7 +26,7 @@ export default async function HymnDetailPage({
     notFound();
   }
 
-  const structure = hymn.structure as HymnStructure;
+  const structure = hymn.structure as unknown as HymnStructure;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -65,9 +64,36 @@ export default async function HymnDetailPage({
 
           <div className="flex flex-wrap gap-4 text-gray-600 mb-4">
             {hymn.author && <p>By {hymn.author}</p>}
+            {hymn.translator && (
+              <>
+                {hymn.author && <p>•</p>}
+                <p>Translated by {hymn.translator}</p>
+              </>
+            )}
             {hymn.year && <p>•</p>}
             {hymn.year && <p>{hymn.year}</p>}
           </div>
+
+          {/* Additional Metadata */}
+          {(hymn.firstLine || hymn.meter || hymn.language) && (
+            <div className="text-sm text-gray-600 space-y-1 mb-4">
+              {hymn.firstLine && (
+                <p>
+                  <span className="font-medium">First Line:</span> {hymn.firstLine}
+                </p>
+              )}
+              {hymn.meter && (
+                <p>
+                  <span className="font-medium">Meter:</span> {hymn.meter}
+                </p>
+              )}
+              {hymn.language && (
+                <p>
+                  <span className="font-medium">Language:</span> {hymn.language}
+                </p>
+              )}
+            </div>
+          )}
 
           {hymn.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
@@ -97,17 +123,11 @@ export default async function HymnDetailPage({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Download Options */}
-          <div className="lg:col-span-1">
-            <DownloadOptions hymnId={hymn.id} hymnTitle={hymn.title} />
-          </div>
-
-          {/* Preview */}
-          <div className="lg:col-span-2">
-            <HymnPreview structure={structure} title={hymn.title} />
-          </div>
-        </div>
+        <HymnViewClient
+          hymnId={hymn.id}
+          hymnTitle={hymn.title}
+          structure={structure}
+        />
       </main>
     </div>
   );

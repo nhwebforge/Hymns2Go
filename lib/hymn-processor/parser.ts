@@ -19,10 +19,25 @@ export interface HymnStructure {
 }
 
 /**
- * Clean text by removing punctuation, extra whitespace, and labels
+ * Strip punctuation from text
+ * Used when user enables "Strip punctuation" option for downloads/display
+ */
+export function stripPunctuation(text: string): string {
+  return text
+    // Remove common punctuation (but keep apostrophes in contractions)
+    .replace(/[.,;:!?"""''—–-]/g, '')
+    // Clean up any double spaces created by punctuation removal
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Clean text by removing punctuation, extra whitespace, labels, and leading verse numbers
  */
 export function cleanText(text: string): string {
   return text
+    // Remove leading verse numbers like "1 " or "1. " at the start of a line
+    .replace(/^\d+[\.\s]+/, '')
     // Remove common punctuation (but keep apostrophes in contractions)
     .replace(/[.,;:!?"""''—–-]/g, '')
     // Remove extra whitespace
@@ -154,16 +169,108 @@ export function formatAsSlides(structure: HymnStructure, linesPerSlide: number =
 /**
  * Format slides as plain text for copying
  */
-export function formatAsPlainText(slides: Slide[]): string {
-  return slides.map(slide => slide.lines.join('\n')).join('\n\n');
+export function formatAsPlainText(
+  slides: Slide[],
+  options?: {
+    includeTitle?: boolean;
+    title?: string;
+    includeVerseNumbers?: boolean;
+  }
+): string {
+  const { includeTitle = false, title = '', includeVerseNumbers = false } = options || {};
+
+  const parts: string[] = [];
+
+  // Add title if requested
+  if (includeTitle && title) {
+    parts.push(title);
+    parts.push(''); // Empty line after title
+  }
+
+  // Track seen verses for verse numbering
+  const seenVerses = new Set<string>();
+
+  const slideTexts = slides.map(slide => {
+    let text = slide.lines.join('\n');
+
+    // Add verse number or refrain prefix if requested and this is the first slide of a section
+    if (includeVerseNumbers) {
+      if (slide.sectionType === 'verse' && slide.sectionNumber) {
+        const verseKey = `verse-${slide.sectionNumber}`;
+        if (!seenVerses.has(verseKey)) {
+          seenVerses.add(verseKey);
+          const lines = slide.lines;
+          text = `${slide.sectionNumber} ${lines[0]}${lines.length > 1 ? '\n' + lines.slice(1).join('\n') : ''}`;
+        }
+      } else if (slide.sectionType === 'chorus') {
+        const chorusKey = 'chorus';
+        if (!seenVerses.has(chorusKey)) {
+          seenVerses.add(chorusKey);
+          const lines = slide.lines;
+          text = `Refrain: ${lines[0]}${lines.length > 1 ? '\n' + lines.slice(1).join('\n') : ''}`;
+        }
+      }
+    }
+
+    return text;
+  });
+
+  parts.push(...slideTexts);
+
+  return parts.join('\n\n');
 }
 
 /**
  * Format slides with slide separators for per-slide copying
  */
-export function formatAsPerSlideText(slides: Slide[]): string {
-  return slides.map((slide, index) => {
-    const slideNumber = index + 1;
-    return `--- Slide ${slideNumber} ---\n${slide.lines.join('\n')}`;
-  }).join('\n\n');
+export function formatAsPerSlideText(
+  slides: Slide[],
+  options?: {
+    includeTitle?: boolean;
+    title?: string;
+    includeVerseNumbers?: boolean;
+  }
+): string {
+  const { includeTitle = false, title = '', includeVerseNumbers = false } = options || {};
+
+  const parts: string[] = [];
+
+  // Add title slide if requested
+  if (includeTitle && title) {
+    parts.push(`--- Slide 1 (Title) ---\n${title}`);
+  }
+
+  // Track seen verses for verse numbering
+  const seenVerses = new Set<string>();
+
+  const slideTexts = slides.map((slide, index) => {
+    const slideNumber = includeTitle ? index + 2 : index + 1;
+
+    let text = slide.lines.join('\n');
+
+    // Add verse number or refrain prefix if requested and this is the first slide of a section
+    if (includeVerseNumbers) {
+      if (slide.sectionType === 'verse' && slide.sectionNumber) {
+        const verseKey = `verse-${slide.sectionNumber}`;
+        if (!seenVerses.has(verseKey)) {
+          seenVerses.add(verseKey);
+          const lines = slide.lines;
+          text = `${slide.sectionNumber} ${lines[0]}${lines.length > 1 ? '\n' + lines.slice(1).join('\n') : ''}`;
+        }
+      } else if (slide.sectionType === 'chorus') {
+        const chorusKey = 'chorus';
+        if (!seenVerses.has(chorusKey)) {
+          seenVerses.add(chorusKey);
+          const lines = slide.lines;
+          text = `Refrain: ${lines[0]}${lines.length > 1 ? '\n' + lines.slice(1).join('\n') : ''}`;
+        }
+      }
+    }
+
+    return `--- Slide ${slideNumber} ---\n${text}`;
+  });
+
+  parts.push(...slideTexts);
+
+  return parts.join('\n\n');
 }

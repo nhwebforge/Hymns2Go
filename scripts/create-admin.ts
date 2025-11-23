@@ -1,7 +1,16 @@
+import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient();
+// Force load from .env file, override shell environment
+dotenv.config({ override: true });
+
+// For scripts, use pg adapter instead of Neon adapter
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const email = process.argv[2] || 'admin@example.com';

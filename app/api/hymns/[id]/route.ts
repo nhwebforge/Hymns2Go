@@ -1,17 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import { prisma } from '@/lib/db/prisma';
-import { auth } from '@/lib/auth';
 import { parseHymnText } from '@/lib/hymn-processor/parser';
 import { z } from 'zod';
 
 const hymnSchema = z.object({
   title: z.string().min(1),
   author: z.string().optional(),
+  translator: z.string().optional(),
   year: z.number().optional(),
   rawText: z.string().min(1),
   isPublicDomain: z.boolean().default(false),
   publisher: z.string().optional(),
   ccliNumber: z.string().optional(),
+  firstLine: z.string().optional(),
+  meter: z.string().optional(),
+  language: z.string().optional(),
   tags: z.array(z.string()).optional(),
 });
 
@@ -61,7 +66,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
 
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -145,7 +150,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
 
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

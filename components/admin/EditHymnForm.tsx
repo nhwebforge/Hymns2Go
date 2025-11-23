@@ -13,11 +13,15 @@ interface Hymn {
   id: string;
   title: string;
   author: string | null;
+  translator: string | null;
   year: number | null;
   rawText: string;
   isPublicDomain: boolean;
   publisher: string | null;
   ccliNumber: string | null;
+  firstLine: string | null;
+  meter: string | null;
+  language: string | null;
   tags: Tag[];
 }
 
@@ -29,11 +33,15 @@ export default function EditHymnForm({ hymn }: { hymn: Hymn }) {
   const [formData, setFormData] = useState({
     title: hymn.title,
     author: hymn.author || '',
+    translator: hymn.translator || '',
     year: hymn.year?.toString() || '',
     rawText: hymn.rawText,
     isPublicDomain: hymn.isPublicDomain,
     publisher: hymn.publisher || '',
     ccliNumber: hymn.ccliNumber || '',
+    firstLine: hymn.firstLine || '',
+    meter: hymn.meter || '',
+    language: hymn.language || '',
     tags: hymn.tags.map((t) => t.name).join(', '),
   });
 
@@ -57,11 +65,15 @@ export default function EditHymnForm({ hymn }: { hymn: Hymn }) {
       const payload = {
         title: formData.title,
         author: formData.author || undefined,
+        translator: formData.translator || undefined,
         year: formData.year ? parseInt(formData.year) : undefined,
         rawText: formData.rawText,
         isPublicDomain: formData.isPublicDomain,
         publisher: formData.publisher || undefined,
         ccliNumber: formData.ccliNumber || undefined,
+        firstLine: formData.firstLine || undefined,
+        meter: formData.meter || undefined,
+        language: formData.language || undefined,
         tags: formData.tags
           ? formData.tags.split(',').map((t) => t.trim())
           : undefined,
@@ -135,6 +147,24 @@ export default function EditHymnForm({ hymn }: { hymn: Hymn }) {
             />
           </div>
 
+          {/* Translator */}
+          <div>
+            <label
+              htmlFor="translator"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Translator
+            </label>
+            <input
+              type="text"
+              name="translator"
+              id="translator"
+              value={formData.translator}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+            />
+          </div>
+
           {/* Year */}
           <div>
             <label
@@ -149,6 +179,63 @@ export default function EditHymnForm({ hymn }: { hymn: Hymn }) {
               id="year"
               value={formData.year}
               onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+            />
+          </div>
+
+          {/* First Line */}
+          <div>
+            <label
+              htmlFor="firstLine"
+              className="block text-sm font-medium text-gray-700"
+            >
+              First Line
+            </label>
+            <input
+              type="text"
+              name="firstLine"
+              id="firstLine"
+              value={formData.firstLine}
+              onChange={handleInputChange}
+              placeholder="e.g. Abide with me fast falls the eventide"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+            />
+          </div>
+
+          {/* Meter */}
+          <div>
+            <label
+              htmlFor="meter"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Meter
+            </label>
+            <input
+              type="text"
+              name="meter"
+              id="meter"
+              value={formData.meter}
+              onChange={handleInputChange}
+              placeholder="e.g. 10 10 10 10, 8 7 8 7 D"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+            />
+          </div>
+
+          {/* Language */}
+          <div>
+            <label
+              htmlFor="language"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Language
+            </label>
+            <input
+              type="text"
+              name="language"
+              id="language"
+              value={formData.language}
+              onChange={handleInputChange}
+              placeholder="e.g. English"
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             />
           </div>

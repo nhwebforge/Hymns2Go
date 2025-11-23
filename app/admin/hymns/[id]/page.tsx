@@ -1,14 +1,19 @@
-import { auth } from '@/lib/auth';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db/prisma';
 import EditHymnForm from '@/components/admin/EditHymnForm';
+
+// Disable caching for this page
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function EditHymnPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
   if (!session?.user) {
     redirect('/admin/login');
   }

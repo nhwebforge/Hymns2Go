@@ -9,8 +9,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // Admin user model
@@ -27,19 +28,42 @@ model User {
 model Hymn {
   id          String   @id @default(cuid())
   title       String
+  latinTitle  String?  // Latin title (for translated hymns)
   author      String?
+  translator  String?  // Translator name (especially for translated hymns)
   year        Int?
 
-  // Raw uploaded text
+  // Raw uploaded text (with punctuation preserved)
   rawText     String   @db.Text
 
   // Processed structure (stored as JSON)
   structure   Json     // {verses: [{type: 'verse', lines: [...]}], chorus: {...}}
 
-  // Metadata
+  // Text metadata
+  firstLine      String?
+  meter          String?  // e.g., "10 10 10 10", "8 7 8 7 D", "LM", "SM"
+  language       String?  @default("English")
+  copyright      String?  @db.Text  // Copyright text
+  ccliNumber     String?
+  scriptureRefs  String[]  // Array of scripture references
+  notes          String?  @db.Text  // Additional notes about the hymn
+
+  // Tune metadata
+  tuneName       String?  // Name of the tune
+  composer       String?  // Tune composer
+  arranger       String?  // Arranger (if different from composer)
+  tuneKey        String?  // Musical key (e.g., "G Major", "E♭ Major")
+  tuneSource     String?  @db.Text  // Source of the tune
+  tuneMeter      String?  // Meter specific to the tune (if different from text meter)
+
+  // Publishing metadata
   isPublicDomain Boolean @default(false)
   publisher      String?
-  ccliNumber     String?
+  publicationDate String?  // Year of publication as string (e.g., "2000", "2013")
+
+  // Hymnal source information
+  hymnalCode     String?  // e.g., "CAH2000", "AM2013"
+  hymnalNumber   String?  // Hymn number in the hymnal (e.g., "1", "50a")
 
   // Timestamps
   createdAt   DateTime @default(now())
@@ -50,6 +74,8 @@ model Hymn {
 
   @@index([title])
   @@index([author])
+  @@index([firstLine])
+  @@index([hymnalCode])
 }
 
 // Categories/tags for hymns

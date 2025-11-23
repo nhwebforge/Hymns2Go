@@ -1,18 +1,33 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface DownloadOptionsProps {
   hymnId: string;
   hymnTitle: string;
+  linesPerSlide: number;
+  setLinesPerSlide: (value: number) => void;
+  includeVerseNumbers: boolean;
+  setIncludeVerseNumbers: (value: boolean) => void;
+  includeTitleSlide: boolean;
+  setIncludeTitleSlide: (value: boolean) => void;
+  stripPunctuation: boolean;
+  setStripPunctuation: (value: boolean) => void;
 }
 
 export default function DownloadOptions({
   hymnId,
   hymnTitle,
+  linesPerSlide,
+  setLinesPerSlide,
+  includeVerseNumbers,
+  setIncludeVerseNumbers,
+  includeTitleSlide,
+  setIncludeTitleSlide,
+  stripPunctuation,
+  setStripPunctuation
 }: DownloadOptionsProps) {
-  const [linesPerSlide, setLinesPerSlide] = useState(2);
-  const [proPresenterVersion, setProPresenterVersion] = useState<6 | 7>(6);
   const [downloading, setDownloading] = useState(false);
 
   const handleDownload = async (format: string) => {
@@ -21,7 +36,9 @@ export default function DownloadOptions({
       const params = new URLSearchParams({
         format,
         linesPerSlide: linesPerSlide.toString(),
-        proPresenterVersion: proPresenterVersion.toString(),
+        includeVerseNumbers: includeVerseNumbers.toString(),
+        includeTitleSlide: includeTitleSlide.toString(),
+        stripPunctuation: stripPunctuation.toString(),
       });
 
       const response = await fetch(
@@ -53,8 +70,10 @@ export default function DownloadOptions({
     switch (format) {
       case 'pptx':
         return 'pptx';
-      case 'propresenter':
-        return proPresenterVersion === 7 ? 'pro' : 'pro6';
+      case 'propresenter6':
+        return 'pro6';
+      case 'propresenter7':
+        return 'pro';
       case 'text':
       case 'text-per-slide':
         return 'txt';
@@ -87,56 +106,100 @@ export default function DownloadOptions({
         </select>
       </div>
 
-      {/* ProPresenter Version */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          ProPresenter Version
+      {/* Options Checkboxes */}
+      <div className="mb-6 space-y-3">
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            checked={includeTitleSlide}
+            onChange={(e) => setIncludeTitleSlide(e.target.checked)}
+            className="mr-2 h-4 w-4"
+          />
+          <span className="text-sm text-gray-700">Include title slide</span>
         </label>
-        <div className="flex gap-4">
-          <label className="flex items-center">
-            <input
-              type="radio"
-              value={6}
-              checked={proPresenterVersion === 6}
-              onChange={(e) =>
-                setProPresenterVersion(parseInt(e.target.value) as 6 | 7)
-              }
-              className="mr-2"
-            />
-            <span className="text-sm">Version 6</span>
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              value={7}
-              checked={proPresenterVersion === 7}
-              onChange={(e) =>
-                setProPresenterVersion(parseInt(e.target.value) as 6 | 7)
-              }
-              className="mr-2"
-            />
-            <span className="text-sm">Version 7</span>
-          </label>
-        </div>
+
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            checked={includeVerseNumbers}
+            onChange={(e) => setIncludeVerseNumbers(e.target.checked)}
+            className="mr-2 h-4 w-4"
+          />
+          <span className="text-sm text-gray-700">Include verse numbers, refrain headings, etc.</span>
+        </label>
+
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            checked={stripPunctuation}
+            onChange={(e) => setStripPunctuation(e.target.checked)}
+            className="mr-2 h-4 w-4"
+          />
+          <span className="text-sm text-gray-700">Strip punctuation</span>
+        </label>
       </div>
 
       {/* Download Buttons */}
       <div className="space-y-3">
-        <button
-          onClick={() => handleDownload('pptx')}
-          disabled={downloading}
-          className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-        >
-          {downloading ? 'Downloading...' : 'Download PowerPoint'}
-        </button>
+        <div className="flex items-stretch gap-3">
+          <div className="w-12 flex-shrink-0 flex items-center justify-center">
+            <Image
+              src="/icons/ppt.png"
+              alt="PowerPoint"
+              width={48}
+              height={48}
+              className="object-contain"
+            />
+          </div>
+          <button
+            onClick={() => handleDownload('pptx')}
+            disabled={downloading}
+            className="flex-1 px-4 py-3 text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            style={{ backgroundColor: '#AA0D20' }}
+          >
+            {downloading ? 'Downloading...' : 'Download for PowerPoint'}
+          </button>
+        </div>
 
-        <button
-          onClick={() => handleDownload('propresenter')}
-          disabled={downloading}
-          className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-        >
-          {downloading ? 'Downloading...' : 'Download ProPresenter'}
-        </button>
+        <div className="flex items-stretch gap-3">
+          <div className="w-12 flex-shrink-0 flex items-center justify-center">
+            <Image
+              src="/icons/pro6.png"
+              alt="ProPresenter 6"
+              width={48}
+              height={48}
+              className="object-contain"
+            />
+          </div>
+          <button
+            onClick={() => handleDownload('propresenter6')}
+            disabled={downloading}
+            className="flex-1 px-4 py-3 text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            style={{ backgroundColor: '#5882b2' }}
+          >
+            {downloading ? 'Downloading...' : 'Download for ProPresenter 6'}
+          </button>
+        </div>
+
+        <div className="flex items-stretch gap-3">
+          <div className="w-12 flex-shrink-0 flex items-center justify-center">
+            <Image
+              src="/icons/pro7.png"
+              alt="ProPresenter 7"
+              width={48}
+              height={48}
+              className="object-contain"
+            />
+          </div>
+          <button
+            onClick={() => handleDownload('propresenter7')}
+            disabled={downloading}
+            className="flex-1 px-4 py-3 text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            style={{ backgroundColor: '#ff7600' }}
+          >
+            {downloading ? 'Downloading...' : 'Download for ProPresenter 7'}
+          </button>
+        </div>
 
         <button
           onClick={() => handleDownload('text')}

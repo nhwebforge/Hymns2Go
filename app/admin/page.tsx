@@ -1,10 +1,11 @@
-import { auth } from '@/lib/auth';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db/prisma';
 import Link from 'next/link';
 
 export default async function AdminDashboard() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
     redirect('/admin/login');
