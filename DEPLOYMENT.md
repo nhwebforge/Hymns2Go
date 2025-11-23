@@ -27,13 +27,17 @@
 ### Environment Variables in Vercel Dashboard
 Set these in Vercel Project Settings → Environment Variables:
 
+**NOTE: There is ONE database - your Neon database. Same URL for everything.**
+
 ```env
 DATABASE_URL=postgresql://neondb_owner:npg_C8BgDSPs4ule@ep-noisy-queen-ab3b69q6-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
-DIRECT_URL=postgresql://neondb_owner:npg_C8BgDSPs4ule@ep-noisy-queen-ab3b69q6-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
-AUTH_SECRET=<generate with: openssl rand -base64 32>
-NEXTAUTH_URL=https://your-domain.vercel.app
-NEXTAUTH_URL_INTERNAL=https://your-domain.vercel.app
+DIRECT_URL=postgresql://neondb_owner:npg_C8BgDSPs4ule@ep-noisy-queen-ab3b69q6.eu-west-2.aws.neon.tech/neondb?sslmode=require
+AUTH_SECRET=development-secret-change-in-production
+NEXTAUTH_URL=https://hymns2-go.vercel.app
+NEXTAUTH_URL_INTERNAL=https://hymns2-go.vercel.app
 ```
+
+Copy these EXACT values to Vercel dashboard. No changes needed.
 
 ### Database Migration
 Run Prisma migrations on production database:
