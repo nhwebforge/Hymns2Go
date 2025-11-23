@@ -6,60 +6,65 @@ export default async function HymnsPage({
 }: {
   searchParams: Promise<{ page?: string; search?: string; tag?: string }>;
 }) {
-  const params = await searchParams;
-  const page = parseInt(params.page || '1');
-  const search = params.search || '';
-  const tagSlug = params.tag || '';
-  const limit = 30;
-  const skip = (page - 1) * limit;
+  try {
+    const params = await searchParams;
+    const page = parseInt(params.page || '1');
+    const search = params.search || '';
+    const tagSlug = params.tag || '';
+    const limit = 30;
+    const skip = (page - 1) * limit;
 
-  const where: any = {};
+    const where: any = {};
 
-  if (search) {
-    where.OR = [
-      { title: { contains: search, mode: 'insensitive' } },
-      { author: { contains: search, mode: 'insensitive' } },
-    ];
-  }
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { author: { contains: search, mode: 'insensitive' } },
+      ];
+    }
 
-  if (tagSlug) {
-    where.tags = {
-      some: {
-        tag: {
-          slug: tagSlug,
-        },
-      },
-    };
-  }
-
-  const [hymns, total, currentTag, allTags] = await Promise.all([
-    prisma.hymn.findMany({
-      where,
-      include: {
-        tags: {
-          include: {
-            tag: true,
+    if (tagSlug) {
+      where.tags = {
+        some: {
+          tag: {
+            slug: tagSlug,
           },
         },
-      },
-      orderBy: {
-        title: 'asc',
-      },
-      skip,
-      take: limit,
-    }),
-    prisma.hymn.count({ where }),
-    tagSlug
-      ? prisma.tag.findUnique({ where: { slug: tagSlug } })
-      : Promise.resolve(null),
-    prisma.tag.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-    }),
-  ]);
+      };
+    }
 
-  const totalPages = Math.ceil(total / limit);
+    const [hymns, total, currentTag, allTags] = await Promise.all([
+      prisma.hymn.findMany({
+        where,
+        include: {
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
+        },
+        orderBy: {
+          title: 'asc',
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.hymn.count({ where }),
+      tagSlug
+        ? prisma.tag.findUnique({ where: { slug: tagSlug } })
+        : Promise.resolve(null),
+      prisma.tag.findMany({
+        orderBy: {
+          name: 'asc',
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+  } catch (error) {
+    console.error('Error in /hymns page:', error);
+    throw error;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
