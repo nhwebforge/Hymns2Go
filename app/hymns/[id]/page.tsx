@@ -13,10 +13,28 @@ export default async function HymnDetailPage({
 
   const hymn = await prisma.hymn.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      author: true,
+      translator: true,
+      year: true,
+      firstLine: true,
+      meter: true,
+      language: true,
+      isPublicDomain: true,
+      publisher: true,
+      ccliNumber: true,
+      structure: true,
       tags: {
-        include: {
-          tag: true,
+        select: {
+          tag: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
         },
       },
     },
