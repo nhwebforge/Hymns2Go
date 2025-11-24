@@ -1,16 +1,15 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db/prisma';
+import InfiniteHymnList from '@/components/public/InfiniteHymnList';
 
 export default async function HymnsPage(props: {
-  searchParams: Promise<{ page?: string; search?: string; tag?: string }>;
+  searchParams: Promise<{ search?: string; tag?: string }>;
 }) {
   const searchParams = await props.searchParams;
   const params = searchParams;
-  const page = parseInt(params.page || '1');
   const search = params.search || '';
   const tagSlug = params.tag || '';
   const limit = 30;
-  const skip = (page - 1) * limit;
 
   const where: any = {};
 
@@ -52,7 +51,6 @@ export default async function HymnsPage(props: {
       orderBy: {
         title: 'asc',
       },
-      skip,
       take: limit,
     }),
     prisma.hymn.count({ where }),
@@ -71,7 +69,7 @@ export default async function HymnsPage(props: {
     }),
   ]);
 
-  const totalPages = Math.ceil(total / limit);
+  const hasMore = hymns.length >= limit;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -154,7 +152,7 @@ export default async function HymnsPage(props: {
           </div>
         )}
 
-        {/* Hymns Grid */}
+        {/* Hymns Grid with Infinite Scroll */}
         {hymns.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-lg shadow">
             <p className="text-xl text-gray-600">
@@ -164,59 +162,12 @@ export default async function HymnsPage(props: {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {hymns.map((hymn) => (
-              <Link
-                key={hymn.id}
-                href={`/hymns/${hymn.id}`}
-                className="bg-white rounded-lg shadow hover:shadow-lg transition p-6 block"
-              >
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {hymn.title}
-                </h3>
-                {hymn.author && (
-                  <p className="text-gray-600 mb-3">{hymn.author}</p>
-                )}
-                {hymn.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {hymn.tags.map((ht) => (
-                      <span
-                        key={ht.tag.id}
-                        className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
-                      >
-                        {ht.tag.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </Link>
-            ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-2">
-            {page > 1 && (
-              <Link
-                href={`/hymns?page=${page - 1}${search ? `&search=${search}` : ''}${tagSlug ? `&tag=${tagSlug}` : ''}`}
-                className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Previous
-              </Link>
-            )}
-            <span className="px-4 py-2 text-sm text-gray-700">
-              Page {page} of {totalPages}
-            </span>
-            {page < totalPages && (
-              <Link
-                href={`/hymns?page=${page + 1}${search ? `&search=${search}` : ''}${tagSlug ? `&tag=${tagSlug}` : ''}`}
-                className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Next
-              </Link>
-            )}
-          </div>
+          <InfiniteHymnList
+            initialHymns={hymns}
+            search={search}
+            tagSlug={tagSlug}
+            hasMore={hasMore}
+          />
         )}
       </main>
     </div>

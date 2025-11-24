@@ -51,10 +51,18 @@ export async function GET(request: NextRequest) {
     const [hymns, total] = await Promise.all([
       prisma.hymn.findMany({
         where,
-        include: {
+        select: {
+          id: true,
+          title: true,
+          author: true,
           tags: {
-            include: {
-              tag: true,
+            select: {
+              tag: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
           },
         },
@@ -68,10 +76,8 @@ export async function GET(request: NextRequest) {
     ]);
 
     return NextResponse.json({
-      hymns: hymns.map((hymn) => ({
-        ...hymn,
-        tags: hymn.tags.map((ht) => ht.tag),
-      })),
+      hymns,
+      hasMore: skip + hymns.length < total,
       pagination: {
         page,
         limit,
