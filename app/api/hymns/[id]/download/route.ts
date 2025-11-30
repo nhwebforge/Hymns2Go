@@ -206,8 +206,10 @@ async function handleDownloadRequest(
           publisher: hymn.publisher || undefined,
           ccliNumber: hymn.ccliNumber || undefined,
           copyrightYear: hymn.year || undefined,
-          ...(includeFormatting && bgRgb && textRgb && outlineRgb && {
-            backgroundColor: { r: bgRgb.r / 255, g: bgRgb.g / 255, b: bgRgb.b / 255 },
+          ...(bgRgb && {
+            backgroundColor: { r: bgRgb.r / 255, g: bgRgb.g / 255, b: bgRgb.b / 255 }
+          }),
+          ...(includeFormatting && textRgb && outlineRgb && {
             textColor: { r: textRgb.r / 255, g: textRgb.g / 255, b: textRgb.b / 255 },
             includeShadow,
             includeOutline,
