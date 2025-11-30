@@ -121,7 +121,10 @@ function generateProPresenter6XML(
   Object.entries(sectionGroups).forEach(([sectionName, sectionData]) => {
     slideGroups.push({
       label: sectionName,
-      slides: sectionData.slides,
+      slides: sectionData.slides.map(text => ({
+        text: text,
+        slideColor: backgroundColor, // Add background color to each slide
+      })),
       groupColor: sectionData.color,
     });
   });
@@ -165,7 +168,11 @@ function generateProPresenter6XML(
         enabled: true,
         color: outlineColor,
         width: 3,
-      } : undefined,
+      } : {
+        enabled: false,
+        color: { r: 0, g: 0, b: 0 },
+        width: 0,
+      },
     },
   });
 
