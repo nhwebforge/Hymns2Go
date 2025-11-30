@@ -8,6 +8,9 @@ export interface PowerPointOptions {
   backgroundColor?: string;
   includeTitleSlide?: boolean;
   includeVerseNumbers?: boolean;
+  includeShadow?: boolean;
+  includeOutline?: boolean;
+  outlineColor?: string;
 }
 
 /**
@@ -27,14 +30,18 @@ export async function generatePowerPoint(
     textColor = '000000',
     backgroundColor = 'FFFFFF',
     includeTitleSlide = true,
-    includeVerseNumbers = false
+    includeVerseNumbers = false,
+    includeShadow = false,
+    includeOutline = false,
+    outlineColor = '000000'
   } = options;
 
   // Add title slide if requested
   if (includeTitleSlide) {
     const titleSlide = pptx.addSlide();
     titleSlide.background = { color: backgroundColor };
-    titleSlide.addText(hymnTitle, {
+
+    const titleTextOptions: any = {
       x: 0.5,
       y: '40%',
       w: '90%',
@@ -44,7 +51,27 @@ export async function generatePowerPoint(
       color: textColor,
       align: 'center',
       fontFace
-    });
+    };
+
+    if (includeShadow) {
+      titleTextOptions.shadow = {
+        type: 'outer',
+        angle: 45,
+        blur: 3,
+        offset: 2,
+        opacity: 0.75,
+        color: '000000'
+      };
+    }
+
+    if (includeOutline) {
+      titleTextOptions.outline = {
+        size: 1,
+        color: outlineColor
+      };
+    }
+
+    titleSlide.addText(hymnTitle, titleTextOptions);
   }
 
   // Track which sections we've seen for numbering/labeling
@@ -78,7 +105,7 @@ export async function generatePowerPoint(
       }
     }
 
-    contentSlide.addText(text, {
+    const textOptions: any = {
       x: 0.5,
       y: '30%',
       w: '90%',
@@ -88,7 +115,27 @@ export async function generatePowerPoint(
       align: 'center',
       valign: 'middle',
       fontFace
-    });
+    };
+
+    if (includeShadow) {
+      textOptions.shadow = {
+        type: 'outer',
+        angle: 45,
+        blur: 3,
+        offset: 2,
+        opacity: 0.75,
+        color: '000000'
+      };
+    }
+
+    if (includeOutline) {
+      textOptions.outline = {
+        size: 1,
+        color: outlineColor
+      };
+    }
+
+    contentSlide.addText(text, textOptions);
   }
 
   // Generate and return buffer

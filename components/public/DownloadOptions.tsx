@@ -14,6 +14,19 @@ interface DownloadOptionsProps {
   setIncludeTitleSlide: (value: boolean) => void;
   stripPunctuation: boolean;
   setStripPunctuation: (value: boolean) => void;
+  editedSlides: { slideIndex: number; lines: string[] }[];
+  includeFormatting: boolean;
+  setIncludeFormatting: (value: boolean) => void;
+  backgroundColor: string;
+  setBackgroundColor: (value: string) => void;
+  textColor: string;
+  setTextColor: (value: string) => void;
+  includeShadow: boolean;
+  setIncludeShadow: (value: boolean) => void;
+  includeOutline: boolean;
+  setIncludeOutline: (value: boolean) => void;
+  outlineColor: string;
+  setOutlineColor: (value: string) => void;
 }
 
 export default function DownloadOptions({
@@ -26,7 +39,20 @@ export default function DownloadOptions({
   includeTitleSlide,
   setIncludeTitleSlide,
   stripPunctuation,
-  setStripPunctuation
+  setStripPunctuation,
+  editedSlides,
+  includeFormatting,
+  setIncludeFormatting,
+  backgroundColor,
+  setBackgroundColor,
+  textColor,
+  setTextColor,
+  includeShadow,
+  setIncludeShadow,
+  includeOutline,
+  setIncludeOutline,
+  outlineColor,
+  setOutlineColor
 }: DownloadOptionsProps) {
   const [downloading, setDownloading] = useState(false);
 
@@ -39,11 +65,31 @@ export default function DownloadOptions({
         includeVerseNumbers: includeVerseNumbers.toString(),
         includeTitleSlide: includeTitleSlide.toString(),
         stripPunctuation: stripPunctuation.toString(),
+        includeFormatting: includeFormatting.toString(),
+        backgroundColor: backgroundColor,
+        textColor: textColor,
+        includeShadow: includeShadow.toString(),
+        includeOutline: includeOutline.toString(),
+        outlineColor: outlineColor,
       });
 
-      const response = await fetch(
-        `/api/hymns/${hymnId}/download?${params.toString()}`
-      );
+      let response;
+      if (editedSlides.length > 0) {
+        // Use POST with edited slides
+        response = await fetch(
+          `/api/hymns/${hymnId}/download?${params.toString()}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ editedSlides })
+          }
+        );
+      } else {
+        // Use GET without edits
+        response = await fetch(
+          `/api/hymns/${hymnId}/download?${params.toString()}`
+        );
+      }
 
       if (!response.ok) {
         throw new Error('Download failed');
@@ -135,8 +181,135 @@ export default function DownloadOptions({
             onChange={(e) => setStripPunctuation(e.target.checked)}
             className="mr-2 h-4 w-4"
           />
-          <span className="text-sm text-gray-700">Strip punctuation</span>
+          <span className="text-sm text-gray-700">Remove punctuation</span>
         </label>
+      </div>
+
+      {/* Formatting Options */}
+      <div className="mb-6">
+        <label className="flex items-center mb-3">
+          <input
+            type="checkbox"
+            checked={includeFormatting}
+            onChange={(e) => setIncludeFormatting(e.target.checked)}
+            className="mr-2 h-4 w-4"
+          />
+          <span className="text-sm font-medium text-gray-700">Include basic formatting</span>
+        </label>
+
+        <div className={`border-2 rounded-lg p-4 space-y-4 transition-all ${
+          includeFormatting
+            ? 'border-blue-300 bg-blue-50/30'
+            : 'border-gray-200 bg-gray-50 opacity-60'
+        }`}>
+          {/* Background Color */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-2">
+              Background Color
+            </label>
+            <div className="flex gap-2 items-center">
+              <input
+                type="color"
+                value={backgroundColor}
+                onChange={(e) => setBackgroundColor(e.target.value)}
+                disabled={!includeFormatting}
+                className="h-10 w-20 rounded border border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              <input
+                type="text"
+                value={backgroundColor}
+                onChange={(e) => setBackgroundColor(e.target.value)}
+                disabled={!includeFormatting}
+                placeholder="#000000"
+                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+              <button
+                onClick={() => setBackgroundColor('transparent')}
+                disabled={!includeFormatting}
+                className="px-3 py-2 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+
+          {/* Text Color */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-2">
+              Text Color
+            </label>
+            <div className="flex gap-2 items-center">
+              <input
+                type="color"
+                value={textColor}
+                onChange={(e) => setTextColor(e.target.value)}
+                disabled={!includeFormatting}
+                className="h-10 w-20 rounded border border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              <input
+                type="text"
+                value={textColor}
+                onChange={(e) => setTextColor(e.target.value)}
+                disabled={!includeFormatting}
+                placeholder="#FFFFFF"
+                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
+
+          {/* Shadow */}
+          <div>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={includeShadow}
+                onChange={(e) => setIncludeShadow(e.target.checked)}
+                disabled={!includeFormatting}
+                className="mr-2 h-4 w-4 disabled:cursor-not-allowed"
+              />
+              <span className="text-xs text-gray-700">Include shadow</span>
+            </label>
+          </div>
+
+          {/* Outline */}
+          <div>
+            <label className="flex items-center mb-2">
+              <input
+                type="checkbox"
+                checked={includeOutline}
+                onChange={(e) => setIncludeOutline(e.target.checked)}
+                disabled={!includeFormatting}
+                className="mr-2 h-4 w-4 disabled:cursor-not-allowed"
+              />
+              <span className="text-xs text-gray-700">Include text outline</span>
+            </label>
+
+            {includeOutline && (
+              <div className="ml-6">
+                <label className="block text-xs font-medium text-gray-700 mb-2">
+                  Outline Color
+                </label>
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="color"
+                    value={outlineColor}
+                    onChange={(e) => setOutlineColor(e.target.value)}
+                    disabled={!includeFormatting}
+                    className="h-10 w-20 rounded border border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                  <input
+                    type="text"
+                    value={outlineColor}
+                    onChange={(e) => setOutlineColor(e.target.value)}
+                    disabled={!includeFormatting}
+                    placeholder="#000000"
+                    className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Download Buttons */}

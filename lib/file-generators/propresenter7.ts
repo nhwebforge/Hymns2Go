@@ -14,6 +14,9 @@ export interface ProPresenter7Options {
   author?: string;
   publisher?: string;
   copyrightYear?: number;
+  includeShadow?: boolean;
+  includeOutline?: boolean;
+  outlineColor?: { r: number; g: number; b: number; a: number };
 }
 
 /**
@@ -38,7 +41,14 @@ export async function generateProPresenter7(
     publisher,
     ccliNumber,
     copyrightYear,
+    includeShadow = false,
+    includeOutline = false,
+    outlineColor = { r: 0, g: 0, b: 0, a: 1 }, // Black outline
   } = options;
+
+  console.log('=== generateProPresenter7 called ===');
+  console.log('includeShadow:', includeShadow);
+  console.log('includeOutline:', includeOutline);
 
   // Load proto files
   const protoPath = path.join(process.cwd(), 'lib', 'proto');
@@ -67,13 +77,56 @@ export async function generateProPresenter7(
     const boldTag = isTitle ? '\\b' : '';
     const baselineTag = isTitle ? ' \\up0' : '';
 
+    // Convert text color to RGB 0-255 range
+    // When shadow is enabled, ProPresenter adjusts colors slightly in RTF
+    let textR = Math.round(textColor.r * 255);
+    let textG = Math.round(textColor.g * 255);
+    let textB = Math.round(textColor.b * 255);
+
+    if (includeShadow) {
+      // Reduce red slightly (by about 6-34 depending on initial value)
+      if (textR === 0) {
+        textR = 34;
+      } else if (textR > 200) {
+        textR = Math.max(0, textR - 6);
+      }
+
+      // Add small amount to blue (about 10-12)
+      if (textB < 20) {
+        textB = Math.min(255, textB + 10);
+      } else if (textB > 40) {
+        textB = Math.max(0, textB - 12);
+      }
+    }
+
+    // Convert text color to percentage for cssrgb
+    const textRPct = Math.round((textColor.r * 255) / 255 * 100000);
+    const textGPct = Math.round((textColor.g * 255) / 255 * 100000);
+    const textBPct = Math.round((textColor.b * 255) / 255 * 100000);
+
+    // Add outline color to color table if outline is enabled
+    const outlineR = Math.round(outlineColor.r * 255);
+    const outlineG = Math.round(outlineColor.g * 255);
+    const outlineB = Math.round(outlineColor.b * 255);
+
+    const colorTable = includeOutline
+      ? `{\\colortbl;\\red255\\green255\\blue255;\\red${textR}\\green${textG}\\blue${textB};\\red${outlineR}\\green${outlineG}\\blue${outlineB};}`
+      : `{\\colortbl;\\red255\\green255\\blue255;\\red${textR}\\green${textG}\\blue${textB};}`;
+
+    const expandedColorTable = includeOutline
+      ? `{\\*\\expandedcolortbl;;\\cssrgb\\c${textRPct}\\c${textGPct}\\c${textBPct};\\csgray\\c0;}`
+      : `{\\*\\expandedcolortbl;;\\cssrgb\\c${textRPct}\\c${textGPct}\\c${textBPct};}`;
+
+    // Add outline/stroke tags if enabled
+    const outlineTag = includeOutline ? ' \\outl0\\strokewidth-40 \\strokec3' : '';
+
     const rtf = `{\\rtf1\\ansi\\ansicpg1252\\cocoartf2867
 \\cocoatextscaling0\\cocoaplatform0{\\fonttbl\\f0\\fswiss\\fcharset0 ${font};}
-{\\colortbl;\\red255\\green255\\blue255;\\red255\\green255\\blue255;}
-{\\*\\expandedcolortbl;;\\cssrgb\\c100000\\c100000\\c100000;}
+${colorTable}
+${expandedColorTable}
 \\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\sa1400\\pardirnatural\\qc\\partightenfactor0
 
-\\f0${boldTag}\\fs${size * 2} \\cf2${baselineTag} ${text.replace(/\n/g, '\\\n')}}`;
+\\f0${boldTag}\\fs${size * 2} \\cf2${baselineTag}${outlineTag} ${text.replace(/\n/g, '\\\n')}}`;
 
     return Buffer.from(rtf, 'utf-8').toString('base64');
   };
@@ -87,7 +140,6 @@ export async function generateProPresenter7(
 
     const cueData = {
       uuid: cueUUID,
-      name: slideName,
       isEnabled: true,
       actions: [
         {
@@ -100,7 +152,12 @@ export async function generateProPresenter7(
                 uuid: createUUID(),
                 size: { width: 1920, height: 1080 },
                 drawsBackgroundColor: true,
-                backgroundColor: backgroundColor,
+                backgroundColor: {
+                  red: backgroundColor.r,
+                  green: backgroundColor.g,
+                  blue: backgroundColor.b,
+                  alpha: backgroundColor.a,
+                },
                 elements: [
                   {
                     element: {
@@ -111,82 +168,110 @@ export async function generateProPresenter7(
                         size: { width: 1720, height: 880 },
                       },
                       opacity: 1.0,
-                      locked: false,
-                      aspectRatioLocked: false,
                       path: {
                         closed: true,
                         points: [
-                          { point: { x: 0, y: 0 }, q0: { x: 0, y: 0 }, q1: { x: 0, y: 0 }, curved: false },
-                          { point: { x: 1, y: 0 }, q0: { x: 1, y: 0 }, q1: { x: 1, y: 0 }, curved: false },
-                          { point: { x: 1, y: 1 }, q0: { x: 1, y: 1 }, q1: { x: 1, y: 1 }, curved: false },
-                          { point: { x: 0, y: 1 }, q0: { x: 0, y: 1 }, q1: { x: 0, y: 1 }, curved: false },
+                          { point: {}, q0: {}, q1: {} },
+                          { point: { x: 1 }, q0: { x: 1 }, q1: { x: 1 } },
+                          { point: { x: 1, y: 1 }, q0: { x: 1, y: 1 }, q1: { x: 1, y: 1 } },
+                          { point: { y: 1 }, q0: { y: 1 }, q1: { y: 1 } },
                         ],
                         shape: { type: 1 }, // TYPE_RECTANGLE
                       },
                       fill: {
-                        enable: false,
-                        color: { red: 0, green: 0, blue: 0, alpha: 0.7 },
-                        FillType: 'color',
+                        color: { alpha: 0.7 },
                       },
                       stroke: {
-                        enable: false,
                         width: 1,
                         color: { red: 1, green: 1, blue: 1, alpha: 1 },
                       },
-                      shadow: {
-                        style: 0, // STYLE_DROP
+                      shadow: includeShadow ? {
                         angle: 315,
                         offset: 5,
                         radius: 5,
-                        color: { red: 0, green: 0, blue: 0, alpha: 1 },
+                        color: { alpha: 1.0 },
                         opacity: 0.75,
-                        enable: false,
-                      },
+                      } : undefined,
                       feather: {
-                        style: 0, // STYLE_INSIDE
                         radius: 0.0517578125,
-                        enable: false,
                       },
                       text: {
                         rtfData: textToRTFBase64(text, isTitle),
+                        shadow: includeShadow ? {
+                          angle: 315,
+                          offset: 5,
+                          radius: 5,
+                          color: { alpha: 1 },
+                          opacity: 1,
+                          enable: true,
+                        } : { color: {} },
                         verticalAlignment: 1, // VERTICAL_ALIGNMENT_MIDDLE
                         scaleBehavior: 1, // SCALE_BEHAVIOR_SCALE_FONT_DOWN
+                        margins: {},
                         isSuperscriptStandardized: true,
+                        transformDelimiter: '  •  ',
+                        chordPro: {
+                          color: {
+                            red: 0.9929999709129333,
+                            green: 0.7599999904632568,
+                            blue: 0.03200000151991844,
+                            alpha: 1
+                          }
+                        },
                         attributes: {
                           font: {
                             name: slideFont,
                             size: slideSize,
                             family: isTitle ? 'Helvetica' : fontName,
-                            face: '',
-                            italic: false,
-                            bold: isBold,
+                            ...(isBold && { bold: true }),
                           },
-                          textSolidFill: textColor,
+                          textSolidFill: {
+                            ...(textColor.r !== 0 && { red: textColor.r }),
+                            green: textColor.g,
+                            ...(textColor.b !== 0 && { blue: textColor.b }),
+                            alpha: textColor.a,
+                          },
                           fill: 'textSolidFill',
+                          underlineStyle: {},
+                          ...(includeShadow && {
+                            strokeWidth: -2,
+                            strokeColor: { alpha: 1 }
+                          }),
+                          strikethroughStyle: {},
                           paragraphStyle: {
-                            alignment: 1, // ALIGNMENT_CENTER
+                            alignment: 2, // ALIGNMENT_CENTER
                             lineHeightMultiple: 1,
                             paragraphSpacing: 70,
                             tabStops: [
-                              { location: 28, alignment: 0 },
-                              { location: 56, alignment: 0 },
-                              { location: 84, alignment: 0 },
-                              { location: 112, alignment: 0 },
-                              { location: 140, alignment: 0 },
-                              { location: 168, alignment: 0 },
-                              { location: 196, alignment: 0 },
-                              { location: 224, alignment: 0 },
-                              { location: 252, alignment: 0 },
-                              { location: 280, alignment: 0 },
-                              { location: 308, alignment: 0 },
-                              { location: 336, alignment: 0 },
+                              { location: 28 },
+                              { location: 56 },
+                              { location: 84 },
+                              { location: 112 },
+                              { location: 140 },
+                              { location: 168 },
+                              { location: 196 },
+                              { location: 224 },
+                              { location: 252 },
+                              { location: 280 },
+                              { location: 308 },
+                              { location: 336 },
                             ],
+                            textList: {},
                           },
                         },
                       },
+                      textLineMask: {},
+                    },
+                    textScroller: {
+                      scrollRate: 0.5,
+                      shouldRepeat: true,
+                      repeatDistance: 0.05813953488372093
                     },
                   },
                 ],
+              },
+              chordChart: {
+                platform: 1
               },
             },
           },

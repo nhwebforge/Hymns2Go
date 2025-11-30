@@ -12,6 +12,7 @@ interface Tag {
 interface Hymn {
   id: string;
   title: string;
+  catalogueTitle: string | null;
   author: string | null;
   translator: string | null;
   year: number | null;
@@ -30,8 +31,15 @@ export default function EditHymnForm({ hymn }: { hymn: Hymn }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const generateCatalogueTitle = (title: string): string => {
+    // Remove leading punctuation, quotes, and special characters
+    const cleaned = title.replace(/^["'""''`´'„‚«»‹›\[\](){}<>¡¿\-–—•*†‡§¶.,:;!?\s]+/g, '');
+    return cleaned.length > 0 ? cleaned : title;
+  };
+
   const [formData, setFormData] = useState({
     title: hymn.title,
+    catalogueTitle: hymn.catalogueTitle || generateCatalogueTitle(hymn.title),
     author: hymn.author || '',
     translator: hymn.translator || '',
     year: hymn.year?.toString() || '',
@@ -49,11 +57,21 @@ export default function EditHymnForm({ hymn }: { hymn: Hymn }) {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
-    }));
+
+    // If title is being changed, auto-update catalogueTitle
+    if (name === 'title') {
+      setFormData((prev) => ({
+        ...prev,
+        title: value,
+        catalogueTitle: generateCatalogueTitle(value),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]:
+          type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,6 +82,7 @@ export default function EditHymnForm({ hymn }: { hymn: Hymn }) {
     try {
       const payload = {
         title: formData.title,
+        catalogueTitle: formData.catalogueTitle || undefined,
         author: formData.author || undefined,
         translator: formData.translator || undefined,
         year: formData.year ? parseInt(formData.year) : undefined,
@@ -127,6 +146,30 @@ export default function EditHymnForm({ hymn }: { hymn: Hymn }) {
               onChange={handleInputChange}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             />
+          </div>
+
+          {/* Catalogue Title */}
+          <div>
+            <label
+              htmlFor="catalogueTitle"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Catalogue Title
+              <span className="text-gray-500 font-normal ml-2 text-xs">
+                (Used for alphabetical sorting - auto-populated from title)
+              </span>
+            </label>
+            <input
+              type="text"
+              name="catalogueTitle"
+              id="catalogueTitle"
+              value={formData.catalogueTitle}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm bg-gray-50"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Leading punctuation is automatically removed for proper alphabetization. You can manually override if needed.
+            </p>
           </div>
 
           {/* Author */}

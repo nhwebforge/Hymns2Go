@@ -10,6 +10,11 @@ export interface ProPresenterOptions {
   copyrightYear?: number;
   includeTitleSlide?: boolean;
   includeVerseNumbers?: boolean;
+  backgroundColor?: { r: number; g: number; b: number };
+  textColor?: { r: number; g: number; b: number };
+  includeShadow?: boolean;
+  includeOutline?: boolean;
+  outlineColor?: { r: number; g: number; b: number };
 }
 
 /**
@@ -28,6 +33,11 @@ function generateProPresenter6XML(
     copyrightYear,
     includeTitleSlide = false,
     includeVerseNumbers = false,
+    backgroundColor = { r: 0, g: 0, b: 0 },
+    textColor = { r: 255, g: 255, b: 255 },
+    includeShadow = false,
+    includeOutline = false,
+    outlineColor = { r: 0, g: 0, b: 0 },
   } = options;
 
   // Group slides by section
@@ -131,20 +141,32 @@ function generateProPresenter6XML(
       category: category,
       height: 1080,
       width: 1920,
+      backgroundColor: backgroundColor,
     },
     slideGroups: slideGroups,
     slideTextFormatting: {
       fontName: 'Helvetica',
       textSize: 140,
-      textColor: { r: 255, g: 255, b: 255 }, // White
+      textColor: textColor,
       textPadding: 100,
-      textShadow: {
+      textShadow: includeShadow ? {
         enabled: true,
         angle: 315,
         color: { r: 0, g: 0, b: 0 },
         length: 5,
         radius: 5,
+      } : {
+        enabled: false,
+        angle: 315,
+        color: { r: 0, g: 0, b: 0 },
+        length: 0,
+        radius: 0,
       },
+      textOutline: includeOutline ? {
+        enabled: true,
+        color: outlineColor,
+        width: 3,
+      } : undefined,
     },
   });
 

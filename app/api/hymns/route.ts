@@ -25,6 +25,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
     const tag = searchParams.get('tag');
+    const startsWith = searchParams.get('startsWith'); // New parameter for alphabet nav
+    const before = searchParams.get('before'); // For bidirectional scroll - get hymns before this title
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
     const skip = (page - 1) * limit;
@@ -36,6 +38,20 @@ export async function GET(request: NextRequest) {
         { title: { contains: search, mode: 'insensitive' } },
         { author: { contains: search, mode: 'insensitive' } },
       ];
+    }
+
+    if (startsWith) {
+      // Filter by catalogueTitleLower starting with the letter
+      where.catalogueTitleLower = {
+        startsWith: startsWith.toLowerCase(),
+      };
+    }
+
+    if (before) {
+      // Get hymns that come alphabetically before this title
+      where.catalogueTitleLower = {
+        lt: before.toLowerCase(),
+      };
     }
 
     if (tag) {
@@ -54,6 +70,7 @@ export async function GET(request: NextRequest) {
         select: {
           id: true,
           title: true,
+          catalogueTitle: true,
           author: true,
           tags: {
             select: {
@@ -67,17 +84,20 @@ export async function GET(request: NextRequest) {
           },
         },
         orderBy: {
-          title: 'asc',
+          catalogueTitleLower: before ? 'desc' : 'asc', // Reverse order when fetching previous hymns
         },
-        skip,
+        skip: before ? 0 : skip, // Don't skip when using cursor-based 'before'
         take: limit,
       }),
       prisma.hymn.count({ where }),
     ]);
 
+    // If fetching previous hymns (before), reverse the results to maintain alphabetical order
+    const orderedHymns = before ? hymns.reverse() : hymns;
+
     return NextResponse.json({
-      hymns,
-      hasMore: skip + hymns.length < total,
+      hymns: orderedHymns,
+      hasMore: before ? false : skip + hymns.length < total,
       pagination: {
         page,
         limit,

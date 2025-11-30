@@ -10,6 +10,9 @@ interface HymnPreviewProps {
   includeTitleSlide: boolean;
   includeVerseNumbers: boolean;
   stripPunctuation: boolean;
+  onSlidesChange?: (slides: { slideIndex: number; lines: string[] }[]) => void;
+  backgroundColor?: string;
+  textColor?: string;
 }
 
 export default function HymnPreview({
@@ -18,29 +21,156 @@ export default function HymnPreview({
   linesPerSlide,
   includeTitleSlide,
   includeVerseNumbers,
-  stripPunctuation: shouldStripPunctuation
+  stripPunctuation: shouldStripPunctuation,
+  onSlidesChange,
+  backgroundColor = '#1F2937',
+  textColor = '#FFFFFF'
 }: HymnPreviewProps) {
-  const slides = useMemo(() => formatAsSlides(structure, linesPerSlide), [structure, linesPerSlide]);
+  const baseSlides = useMemo(() => formatAsSlides(structure, linesPerSlide), [structure, linesPerSlide]);
+
+  // Store temporary edits: Map of slideIndex -> edited lines
+  const [editedSlides, setEditedSlides] = useState<Map<number, string[]>>(new Map());
+  const [editingSlide, setEditingSlide] = useState<number | null>(null);
+  const [editText, setEditText] = useState('');
 
   // Track which sections we've seen to only show label on first slide
   const seenSections = new Set<string>();
 
+  // Get the lines for a slide, using edited version if available
+  const getSlideLines = (slideIndex: number, originalLines: string[]) => {
+    return editedSlides.get(slideIndex) || originalLines;
+  };
+
+  // Handle clicking a slide to edit
+  const handleSlideClick = (slideIndex: number, currentLines: string[]) => {
+    setEditingSlide(slideIndex);
+    setEditText(currentLines.join('\n'));
+  };
+
+  // Handle saving edits
+  const handleSaveEdit = () => {
+    if (editingSlide === null) return;
+
+    const newLines = editText.split('\n').filter(line => line.trim());
+    const originalLines = getSlideLines(editingSlide, baseSlides[editingSlide].lines);
+
+    // Check if there are actual changes
+    const hasChanges = newLines.length !== originalLines.length ||
+                       newLines.some((line, i) => line !== originalLines[i]);
+
+    if (hasChanges) {
+      const newEditedSlides = new Map(editedSlides);
+      newEditedSlides.set(editingSlide, newLines);
+      setEditedSlides(newEditedSlides);
+
+      // Notify parent component of changes if callback provided
+      if (onSlidesChange) {
+        const allEdits = Array.from(newEditedSlides.entries()).map(([slideIndex, lines]) => ({
+          slideIndex,
+          lines
+        }));
+        onSlidesChange(allEdits);
+      }
+    }
+
+    setEditingSlide(null);
+    setEditText('');
+  };
+
+  // Handle canceling edit
+  const handleCancelEdit = () => {
+    setEditingSlide(null);
+    setEditText('');
+  };
+
+  // Handle resetting all edits
+  const handleResetAllEdits = () => {
+    setEditedSlides(new Map());
+    if (onSlidesChange) {
+      onSlidesChange([]);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <div className="mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Preview</h2>
+        {editedSlides.size > 0 && (
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-blue-600 font-medium">
+              {editedSlides.size} slide{editedSlides.size > 1 ? 's' : ''} edited
+            </span>
+            <button
+              onClick={handleResetAllEdits}
+              className="text-sm text-gray-600 hover:text-red-600 font-medium underline"
+            >
+              Reset
+            </button>
+          </div>
+        )}
       </div>
 
-      <div className="space-y-4">
+      {/* Edit Modal */}
+      {editingSlide !== null && (() => {
+        const originalLines = getSlideLines(editingSlide, baseSlides[editingSlide].lines);
+        const currentLines = editText.split('\n').filter(line => line.trim());
+        const hasChanges = currentLines.length !== originalLines.length ||
+                          currentLines.some((line, i) => line !== originalLines[i]);
+
+        return (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+              <h3 className="text-xl font-bold mb-4">Edit Slide</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Edit the text below. Changes are temporary and won't be saved to the database.
+              </p>
+              <textarea
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                className="w-full h-64 p-4 border border-gray-300 rounded-lg font-mono text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter slide text (one line per paragraph)"
+              />
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={handleSaveEdit}
+                  disabled={!hasChanges}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Save Changes
+                </button>
+                <button
+                  onClick={handleCancelEdit}
+                  className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
         {/* Title Slide */}
         {includeTitleSlide && (
-          <div className="bg-gray-900 text-white rounded-lg p-8 flex items-center justify-center min-h-[200px]">
-            <h3 className="text-3xl font-bold text-center">{title}</h3>
+          <div className="flex flex-col">
+            <div className="text-xs font-medium text-gray-600 mb-1 px-2">
+              Title
+            </div>
+            <div
+              className="rounded-lg p-6 flex items-center justify-center aspect-[4/3]"
+              style={{
+                backgroundColor: backgroundColor === 'transparent' ? 'transparent' : backgroundColor,
+                color: textColor
+              }}
+            >
+              <h3 className="text-2xl font-bold text-center">{title}</h3>
+            </div>
           </div>
         )}
 
         {/* Content Slides */}
-        {slides.map((slide, index) => {
+        {baseSlides.map((slide, index) => {
           // Determine if we should show section label
           let sectionKey: string | null = null;
           let sectionLabel = '';
@@ -61,8 +191,10 @@ export default function HymnPreview({
             seenSections.add(sectionKey);
           }
 
+          // Get the slide lines (use edited version if available, otherwise original)
+          let slideLines = getSlideLines(index, [...slide.lines]);
+
           // Prepare slide text with verse number/refrain prefix if needed
-          let slideLines = [...slide.lines];
           if (includeVerseNumbers) {
             if (slide.sectionType === 'verse' && slide.sectionNumber && showSectionLabel) {
               // Prepend verse number to first line
@@ -78,21 +210,40 @@ export default function HymnPreview({
             slideLines = slideLines.map(line => stripPunctuation(line));
           }
 
+          const isEdited = editedSlides.has(index);
+
           return (
-            <div key={index}>
+            <div key={index} className="flex flex-col">
               {/* Section header - only on first slide of each section */}
               {showSectionLabel && (
-                <div className="text-sm font-medium text-gray-600 mb-2 px-2">
+                <div className="text-xs font-medium text-gray-600 mb-1 px-2 flex items-center gap-2">
                   {sectionLabel}
+                  {isEdited && (
+                    <span className="text-blue-600">✓ Edited</span>
+                  )}
                 </div>
               )}
-              <div className="bg-gray-900 text-white rounded-lg p-8 flex items-center justify-center min-h-[200px]">
-                <div className="text-center">
+              <div
+                onClick={() => handleSlideClick(index, getSlideLines(index, [...slide.lines]))}
+                className="rounded-lg p-6 flex items-center justify-center aspect-[4/3] cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all relative group"
+                style={{
+                  backgroundColor: backgroundColor === 'transparent' ? 'transparent' : backgroundColor,
+                  color: textColor
+                }}
+              >
+                {isEdited && (
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full"></div>
+                )}
+                <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/10 rounded-lg transition-all"></div>
+                <div className="text-center space-y-4 relative z-10">
                   {slideLines.map((line, lineIndex) => (
-                    <p key={lineIndex} className="text-2xl mb-2">
+                    <p key={lineIndex} className="text-lg leading-tight">
                       {line}
                     </p>
                   ))}
+                </div>
+                <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-xs text-white/70">Click to edit</span>
                 </div>
               </div>
             </div>
@@ -102,7 +253,7 @@ export default function HymnPreview({
 
       <div className="mt-6 pt-6 border-t text-sm text-gray-600">
         <p>
-          Total slides: {(includeTitleSlide ? 1 : 0) + slides.length}
+          Total slides: {(includeTitleSlide ? 1 : 0) + baseSlides.length}
         </p>
       </div>
     </div>

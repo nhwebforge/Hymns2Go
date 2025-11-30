@@ -20,26 +20,27 @@ export interface HymnStructure {
 
 /**
  * Strip punctuation from text
- * Used when user enables "Strip punctuation" option for downloads/display
+ * Used when user enables "Remove punctuation" option for downloads/display
+ * Removes: commas, periods, colons, semicolons
+ * Keeps: hyphens, apostrophes
  */
 export function stripPunctuation(text: string): string {
   return text
-    // Remove common punctuation (but keep apostrophes in contractions)
-    .replace(/[.,;:!?"""''—–-]/g, '')
+    // Remove commas, periods, colons, and semicolons
+    .replace(/[.,;:]/g, '')
     // Clean up any double spaces created by punctuation removal
     .replace(/\s+/g, ' ')
     .trim();
 }
 
 /**
- * Clean text by removing punctuation, extra whitespace, labels, and leading verse numbers
+ * Clean text by removing extra whitespace, labels, and leading verse numbers
+ * NOTE: Does NOT remove punctuation - that's handled separately by stripPunctuation() when user enables it
  */
 export function cleanText(text: string): string {
   return text
     // Remove leading verse numbers like "1 " or "1. " at the start of a line
     .replace(/^\d+[\.\s]+/, '')
-    // Remove common punctuation (but keep apostrophes in contractions)
-    .replace(/[.,;:!?"""''—–-]/g, '')
     // Remove extra whitespace
     .replace(/\s+/g, ' ')
     .trim();
