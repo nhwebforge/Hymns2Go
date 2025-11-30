@@ -153,13 +153,13 @@ function generateProPresenter6XML(
       textPadding: 100,
       textShadow: includeShadow ? {
         enabled: true,
-        angle: 315,
+        angle: 135, // Library converts this: 135° input -> 315° output (bottom-right)
         color: { r: 0, g: 0, b: 0 },
         length: 5,
         radius: 5,
       } : {
         enabled: false,
-        angle: 315,
+        angle: 135,
         color: { r: 0, g: 0, b: 0 },
         length: 0,
         radius: 0,
