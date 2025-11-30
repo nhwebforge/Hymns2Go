@@ -54,10 +54,11 @@ export default function HymnPreview({
     if (includeShadow) {
       // Calculate shadow offset for 315 degrees (bottom-right)
       // 315 degrees = -45 degrees from horizontal
+      // In CSS, positive Y goes DOWN, so we negate the Y value
       const angle = 315 * (Math.PI / 180);
       const distance = 5;
       const x = Math.cos(angle) * distance;
-      const y = Math.sin(angle) * distance;
+      const y = -Math.sin(angle) * distance; // Negate because CSS Y axis is inverted
       shadows.push(`${x}px ${y}px 0px rgba(0, 0, 0, 1)`);
     }
 
