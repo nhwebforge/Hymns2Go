@@ -1,0 +1,71 @@
+/* CMG Sans Font Family */
+@font-face {
+  font-family: 'CMG Sans';
+  src: url('/fonts/CMG Sans/Starter Set Styles/CMGSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'CMG Sans';
+  src: url('/fonts/CMG Sans/Starter Set Styles/CMGSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'CMG Sans';
+  src: url('/fonts/CMG Sans/Starter Set Styles/CMGSans-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'CMG Sans';
+  src: url('/fonts/CMG Sans/Starter Set Styles/CMGSans-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* FS Me Font Family */
+@font-face {
+  font-family: 'FS Me';
+  src: url('/fonts/FS_Me/FS Me-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FS Me';
+  src: url('/fonts/FS_Me/FS Me-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FS Me';
+  src: url('/fonts/FS_Me/FS Me-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'FS Me';
+  src: url('/fonts/FS_Me/FS Me-Bold Italic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'FS Me';
+  src: url('/fonts/FS_Me/FS Me-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FS Me';
+  src: url('/fonts/FS_Me/FS Me-Heavy.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+}

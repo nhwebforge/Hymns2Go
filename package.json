@@ -31,6 +31,7 @@
     "protobufjs": "^7.5.4",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "webfontloader": "^1.6.28",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -39,6 +40,7 @@
     "@types/node": "^20.19.25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/webfontloader": "^1.6.38",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
     "tailwindcss": "^4",
