@@ -37,7 +37,7 @@ function colorToString(color: RgbColor): string {
   return `${color.r} ${color.g} ${color.b} ${a}`;
 }
 
-function generateRTF(text: string, textColor: RgbColor, includeOutline: boolean, outlineColor: RgbColor, isTitle: boolean = false): string {
+function generateRTF(text: string, textColor: RgbColor, includeOutline: boolean, outlineColor: RgbColor, isTitle: boolean = false, strokeWidth: number = 3): string {
   const textR = Math.round(textColor.r * 255);
   const textG = Math.round(textColor.g * 255);
   const textB = Math.round(textColor.b * 255);
@@ -55,7 +55,10 @@ function generateRTF(text: string, textColor: RgbColor, includeOutline: boolean,
   const boldTag = isTitle ? '\\b' : '';
 
   // RTF uses actual newline character (not \\n), and sa1400 for paragraph spacing
-  const rtf = `{\\rtf1\\ansi\\ansicpg1252\\cocoartf1038\\cocoasubrtf320{\\fonttbl\\f0\\fswiss\\fcharset0 Helvetica;}${colorTable}\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\sa1400\\qc\\pardirnatural\\f0${boldTag}\\fs${fontSize * 2} \\cf1 ${text.replace(/\n/g, '\\\n')}}`;
+  // For outline: \outl (outline), \strokewidth (outline width in half-points), \strokec (outline color index)
+  // strokewidth needs to be in half-points, so multiply by 2 (3px = 6 half-points)
+  const outlineTag = includeOutline ? `\\outl\\strokewidth${strokeWidth * 2}\\strokec2` : '';
+  const rtf = `{\\rtf1\\ansi\\ansicpg1252\\cocoartf1038\\cocoasubrtf320{\\fonttbl\\f0\\fswiss\\fcharset0 Helvetica;}${colorTable}\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\sa1400\\qc\\pardirnatural\\f0${boldTag}\\fs${fontSize * 2}${outlineTag} \\cf1 ${text.replace(/\n/g, '\\\n')}}`;
 
   return Buffer.from(rtf, 'utf-8').toString('base64');
 }
@@ -102,8 +105,8 @@ export function generateProPresenter6Manual(
   // Stroke width
   const strokeWidth = includeOutline ? 3 : 0;
 
-  // Background color for slides
-  const bgColor = includeBackground ? colorToString(backgroundColor) : '0 0 0 0';
+  // Background color for slides - always include if specified, don't use transparent
+  const bgColor = colorToString(backgroundColor);
 
   // Group slides by section
   interface SlideGroup {
@@ -164,7 +167,7 @@ export function generateProPresenter6Manual(
 
   // Generate XML
   let xml = `<?xml version="1.0" encoding="utf-8"?>
-<RVPresentationDocument CCLIArtistCredits="" CCLIAuthor="${escapeXml(author)}" CCLICopyrightYear="${copyrightYear}" CCLIDisplay="false" CCLIPublisher="${escapeXml(publisher)}" CCLISongNumber="${ccliNumber}" CCLISongTitle="${escapeXml(hymnTitle)}" category="Hymn" notes="" lastDateUsed="${new Date().toISOString()}" height="1080" width="1920" backgroundColor="${colorToString(backgroundColor)}" buildNumber="6016" chordChartPath="" docType="0" drawingBackgroundColor="${includeBackground}" resourcesDirectory="" selectedArrangementID="" os="1" usedCount="0" versionNumber="600">
+<RVPresentationDocument CCLIArtistCredits="" CCLIAuthor="${escapeXml(author)}" CCLICopyrightYear="${copyrightYear}" CCLIDisplay="false" CCLIPublisher="${escapeXml(publisher)}" CCLISongNumber="${ccliNumber}" CCLISongTitle="${escapeXml(hymnTitle)}" category="Hymn" notes="" lastDateUsed="${new Date().toISOString()}" height="1080" width="1920" backgroundColor="${colorToString(backgroundColor)}" buildNumber="6016" chordChartPath="" docType="0" drawingBackgroundColor="false" resourcesDirectory="" selectedArrangementID="" os="1" usedCount="0" versionNumber="600">
   <RVTransition rvXMLIvarName="transitionObject" transitionType="-1" transitionDirection="0" transitionDuration="1" motionEnabled="false" motionDuration="0" motionSpeed="0" groupIndex="0" orderIndex="0" slideBuildAction="0" slideBuildDelay="0"/>
   <RVTimeline rvXMLIvarName="timeline" timeOffset="0" duration="0" selectedMediaTrackIndex="0" loop="false">
     <array rvXMLIvarName="timeCues"/>
@@ -181,10 +184,10 @@ export function generateProPresenter6Manual(
       const slideText = slide.lines.join('\n');
       const plainTextBase64 = Buffer.from(slideText, 'utf-8').toString('base64');
       const isTitle = slide.sectionType === 'title';
-      const rtfBase64 = generateRTF(slideText, textColor, includeOutline, outlineColor, isTitle);
+      const rtfBase64 = generateRTF(slideText, textColor, includeOutline, outlineColor, isTitle, strokeWidth);
 
       xml += `
-        <RVDisplaySlide backgroundColor="${bgColor}" highlightColor="0 0 0 0" drawingBackgroundColor="${includeBackground}" enabled="true" hotKey="" label="" notes="" UUID="${uuidv4().toUpperCase()}" chordChartPath="">
+        <RVDisplaySlide backgroundColor="${bgColor}" highlightColor="0 0 0 0" drawingBackgroundColor="false" enabled="true" hotKey="" label="" notes="" UUID="${uuidv4().toUpperCase()}" chordChartPath="">
           <array rvXMLIvarName="cues"/>
           <array rvXMLIvarName="displayElements">
             <RVTextElement displayName="Default" UUID="${uuidv4().toUpperCase()}" typeID="0" displayDelay="0" locked="false" persistent="0" fromTemplate="false" opacity="1" source="" bezelRadius="0" rotation="0" drawingFill="false" drawingShadow="${includeShadow}" drawingStroke="${includeOutline}" fillColor="1 1 1 0" adjustsHeightToFit="false" verticalAlignment="0" revealType="0">
