@@ -50,11 +50,12 @@ function generateRTF(text: string, textColor: RgbColor, includeOutline: boolean,
     ? `{\\colortbl;\\red255\\green255\\blue255;\\red${textR}\\green${textG}\\blue${textB};\\red${outlineR}\\green${outlineG}\\blue${outlineB};}`
     : `{\\colortbl;\\red255\\green255\\blue255;\\red${textR}\\green${textG}\\blue${textB};}`;
 
-  // Title slides use larger font (160), regular slides use 140
+  // Title slides use larger font (160) and bold, regular slides use 140
   const fontSize = isTitle ? 160 : 140;
+  const boldTag = isTitle ? '\\b' : '';
 
   // RTF uses actual newline character (not \\n), and sa1400 for paragraph spacing
-  const rtf = `{\\rtf1\\ansi\\ansicpg1252\\cocoartf1038\\cocoasubrtf320{\\fonttbl\\f0\\fswiss\\fcharset0 Helvetica;}${colorTable}\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\sa1400\\qc\\pardirnatural\\f0\\fs${fontSize * 2} \\cf1 ${text.replace(/\n/g, '\\\n')}}`;
+  const rtf = `{\\rtf1\\ansi\\ansicpg1252\\cocoartf1038\\cocoasubrtf320{\\fonttbl\\f0\\fswiss\\fcharset0 Helvetica;}${colorTable}\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\sa1400\\qc\\pardirnatural\\f0${boldTag}\\fs${fontSize * 2} \\cf1 ${text.replace(/\n/g, '\\\n')}}`;
 
   return Buffer.from(rtf, 'utf-8').toString('base64');
 }
@@ -163,7 +164,7 @@ export function generateProPresenter6Manual(
 
   // Generate XML
   let xml = `<?xml version="1.0" encoding="utf-8"?>
-<RVPresentationDocument CCLIArtistCredits="" CCLIAuthor="${escapeXml(author)}" CCLICopyrightYear="${copyrightYear}" CCLIDisplay="false" CCLIPublisher="${escapeXml(publisher)}" CCLISongNumber="${ccliNumber}" CCLISongTitle="${escapeXml(hymnTitle)}" category="Hymn" notes="" lastDateUsed="${new Date().toISOString()}" height="1080" width="1920" backgroundColor="${colorToString(backgroundColor)}" buildNumber="6016" chordChartPath="" docType="0" drawingBackgroundColor="false" resourcesDirectory="" selectedArrangementID="" os="1" usedCount="0" versionNumber="600">
+<RVPresentationDocument CCLIArtistCredits="" CCLIAuthor="${escapeXml(author)}" CCLICopyrightYear="${copyrightYear}" CCLIDisplay="false" CCLIPublisher="${escapeXml(publisher)}" CCLISongNumber="${ccliNumber}" CCLISongTitle="${escapeXml(hymnTitle)}" category="Hymn" notes="" lastDateUsed="${new Date().toISOString()}" height="1080" width="1920" backgroundColor="${colorToString(backgroundColor)}" buildNumber="6016" chordChartPath="" docType="0" drawingBackgroundColor="${includeBackground}" resourcesDirectory="" selectedArrangementID="" os="1" usedCount="0" versionNumber="600">
   <RVTransition rvXMLIvarName="transitionObject" transitionType="-1" transitionDirection="0" transitionDuration="1" motionEnabled="false" motionDuration="0" motionSpeed="0" groupIndex="0" orderIndex="0" slideBuildAction="0" slideBuildDelay="0"/>
   <RVTimeline rvXMLIvarName="timeline" timeOffset="0" duration="0" selectedMediaTrackIndex="0" loop="false">
     <array rvXMLIvarName="timeCues"/>
@@ -183,7 +184,7 @@ export function generateProPresenter6Manual(
       const rtfBase64 = generateRTF(slideText, textColor, includeOutline, outlineColor, isTitle);
 
       xml += `
-        <RVDisplaySlide backgroundColor="${bgColor}" highlightColor="0 0 0 0" drawingBackgroundColor="false" enabled="true" hotKey="" label="" notes="" UUID="${uuidv4().toUpperCase()}" chordChartPath="">
+        <RVDisplaySlide backgroundColor="${bgColor}" highlightColor="0 0 0 0" drawingBackgroundColor="${includeBackground}" enabled="true" hotKey="" label="" notes="" UUID="${uuidv4().toUpperCase()}" chordChartPath="">
           <array rvXMLIvarName="cues"/>
           <array rvXMLIvarName="displayElements">
             <RVTextElement displayName="Default" UUID="${uuidv4().toUpperCase()}" typeID="0" displayDelay="0" locked="false" persistent="0" fromTemplate="false" opacity="1" source="" bezelRadius="0" rotation="0" drawingFill="false" drawingShadow="${includeShadow}" drawingStroke="${includeOutline}" fillColor="1 1 1 0" adjustsHeightToFit="false" verticalAlignment="0" revealType="0">
