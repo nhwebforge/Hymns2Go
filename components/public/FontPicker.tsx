@@ -15,12 +15,14 @@ interface FontPickerProps {
   selectedFont: string;
   onFontChange: (fontFamily: string) => void;
   recommendedGoogleFonts?: string[];
+  disabled?: boolean;
 }
 
 export default function FontPicker({
   selectedFont,
   onFontChange,
-  recommendedGoogleFonts = []
+  recommendedGoogleFonts = [],
+  disabled = false
 }: FontPickerProps) {
   const [googleFonts, setGoogleFonts] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -111,6 +113,8 @@ export default function FontPicker({
 
   // Load selected font if it's a Google Font
   useEffect(() => {
+    if (disabled) return;
+
     const fontName = selectedFont.replace(/['"]/g, '').split(',')[0].trim();
 
     // Check if it's a Google Font
@@ -121,16 +125,19 @@ export default function FontPicker({
         }
       });
     }
-  }, [selectedFont, googleFonts]);
+  }, [selectedFont, googleFonts, disabled]);
 
-  const handleFontSelect = (font: FontOption) => {
-    onFontChange(font.family);
+  const handleFontSelect = (fontFamily: string) => {
+    if (disabled) return;
+
+    onFontChange(fontFamily);
 
     // Load Google Font if needed
-    if (font.category === 'google') {
+    const fontName = fontFamily.replace(/['"]/g, '').split(',')[0].trim();
+    if (googleFonts.includes(fontName)) {
       WebFont.load({
         google: {
-          families: [font.name]
+          families: [fontName]
         }
       });
     }
@@ -146,29 +153,29 @@ export default function FontPicker({
     systemFonts.find(f => f.family === selectedFont) ||
     { name: selectedFont.replace(/['"]/g, '').split(',')[0], family: selectedFont, category: 'google' as const };
 
+  // Get recommended fonts (first 20 in googleFonts array)
+  const recommendedFonts = googleFonts.slice(0, 20);
+  const allOtherFonts = googleFonts.slice(20);
+
   return (
     <div className="space-y-3">
       <label className="block text-sm font-medium text-gray-700">
         Font Family
       </label>
 
-      {/* Selected font display */}
+      {/* Selected font display with dropdown */}
       <div className="relative">
         <select
           value={selectedFont}
-          onChange={(e) => {
-            const selected = [...customFonts, ...systemFonts].find(f => f.family === e.target.value);
-            if (selected) {
-              handleFontSelect(selected);
-            }
-          }}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          style={{ fontFamily: selectedFont }}
+          onChange={(e) => handleFontSelect(e.target.value)}
+          disabled={disabled}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+          style={{ fontFamily: disabled ? undefined : selectedFont }}
         >
           {/* Recommended Custom Fonts */}
           <optgroup label="⭐ Recommended">
             {customFonts.map(font => (
-              <option key={font.family} value={font.family}>
+              <option key={font.family} value={font.family} style={{ fontFamily: font.family }}>
                 {font.name}
               </option>
             ))}
@@ -177,38 +184,36 @@ export default function FontPicker({
           {/* System Fonts */}
           <optgroup label="System Fonts">
             {systemFonts.map(font => (
-              <option key={font.family} value={font.family}>
+              <option key={font.family} value={font.family} style={{ fontFamily: font.family }}>
                 {font.name}
               </option>
             ))}
           </optgroup>
 
-          {/* Google Fonts - Recommended First */}
-          {recommendedGoogleFonts.length > 0 && (
-            <optgroup label="Recommended for Presentations">
-              {recommendedGoogleFonts.map(font => (
-                <option key={font} value={font}>
+          {/* Recommended Google Fonts */}
+          <optgroup label="Recommended for Presentations">
+            {recommendedFonts.map(font => (
+              <option key={font} value={font} style={{ fontFamily: font }}>
+                {font}
+              </option>
+            ))}
+          </optgroup>
+
+          {/* All Other Google Fonts */}
+          {allOtherFonts.length > 0 && (
+            <optgroup label="More Google Fonts">
+              {allOtherFonts.map(font => (
+                <option key={font} value={font} style={{ fontFamily: font }}>
                   {font}
                 </option>
               ))}
             </optgroup>
           )}
-
-          {/* All Google Fonts */}
-          <optgroup label="Google Fonts">
-            {filteredGoogleFonts
-              .filter(font => !recommendedGoogleFonts.includes(font))
-              .map(font => (
-                <option key={font} value={font}>
-                  {font}
-                </option>
-              ))}
-          </optgroup>
         </select>
       </div>
 
       {/* Download link for custom fonts */}
-      {selectedFontOption.downloadUrl && (
+      {!disabled && selectedFontOption.downloadUrl && (
         <div className="flex items-center gap-2 text-sm">
           <span className="text-gray-600">
             {selectedFontOption.description}
@@ -224,34 +229,47 @@ export default function FontPicker({
       )}
 
       {/* Google Font search */}
-      <details className="mt-2">
-        <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
-          Search all Google Fonts
-        </summary>
-        <div className="mt-2">
-          <input
-            type="text"
-            placeholder="Search Google Fonts..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-          {searchTerm && (
-            <div className="mt-2 max-h-40 overflow-y-auto border border-gray-200 rounded-lg">
-              {filteredGoogleFonts.map(font => (
-                <button
-                  key={font}
-                  onClick={() => handleFontSelect({ name: font, family: font, category: 'google' })}
-                  className="w-full px-3 py-2 text-left hover:bg-blue-50 text-sm"
-                  style={{ fontFamily: font }}
-                >
-                  {font}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </details>
+      {!disabled && (
+        <details className="mt-2">
+          <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800 font-medium">
+            🔍 Search all Google Fonts
+          </summary>
+          <div className="mt-3 space-y-2">
+            <input
+              type="text"
+              placeholder="Type to search Google Fonts..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            {searchTerm && filteredGoogleFonts.length > 0 && (
+              <div className="max-h-60 overflow-y-auto border border-gray-300 rounded-lg bg-white shadow-sm">
+                {filteredGoogleFonts.map(font => (
+                  <button
+                    key={font}
+                    onClick={() => {
+                      handleFontSelect(font);
+                      setSearchTerm(''); // Clear search after selection
+                    }}
+                    className="w-full px-4 py-3 text-left hover:bg-blue-50 border-b border-gray-100 last:border-b-0 transition-colors text-gray-900"
+                    style={{ fontFamily: font }}
+                  >
+                    <div className="font-medium text-base">{font}</div>
+                    <div className="text-xs text-gray-500 mt-0.5" style={{ fontFamily: font }}>
+                      The quick brown fox jumps over the lazy dog
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+            {searchTerm && filteredGoogleFonts.length === 0 && (
+              <div className="text-sm text-gray-500 py-2 px-3">
+                No fonts found matching "{searchTerm}"
+              </div>
+            )}
+          </div>
+        </details>
+      )}
     </div>
   );
 }

@@ -213,6 +213,7 @@ export default function DownloadOptions({
             <FontPicker
               selectedFont={fontFamily}
               onFontChange={setFontFamily}
+              disabled={!includeFormatting}
             />
           </div>
 
