@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import WebFont from 'webfontloader';
 
 export interface FontOption {
@@ -27,6 +27,8 @@ export default function FontPicker({
   const [googleFonts, setGoogleFonts] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoadingFonts, setIsLoadingFonts] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Recommended custom fonts
   const customFonts: FontOption[] = [
@@ -87,20 +89,11 @@ export default function FontPicker({
     const fetchGoogleFonts = async () => {
       setIsLoadingFonts(true);
       try {
-        // Combine recommended fonts with any additional ones passed in
         const recommended = recommendedGoogleFonts.length > 0
           ? recommendedGoogleFonts
           : defaultRecommendedFonts;
 
-        // Add more popular Google Fonts for the extended list
-        const additionalFonts = [
-          'Ubuntu', 'PT Sans', 'Rubik', 'Oswald', 'Barlow',
-          'Work Sans', 'Karla', 'DM Sans', 'Outfit', 'Manrope',
-          'Space Grotesk', 'Exo 2', 'Bebas Neue', 'Anton',
-          'Crimson Text', 'Cormorant', 'EB Garamond', 'Bitter'
-        ];
-
-        setGoogleFonts([...recommended, ...additionalFonts]);
+        setGoogleFonts(recommended);
       } catch (error) {
         console.error('Failed to fetch Google Fonts:', error);
       } finally {
@@ -127,10 +120,23 @@ export default function FontPicker({
     }
   }, [selectedFont, googleFonts, disabled]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleFontSelect = (fontFamily: string) => {
     if (disabled) return;
 
     onFontChange(fontFamily);
+    setIsDropdownOpen(false);
 
     // Load Google Font if needed
     const fontName = fontFamily.replace(/['"]/g, '').split(',')[0].trim();
@@ -153,9 +159,7 @@ export default function FontPicker({
     systemFonts.find(f => f.family === selectedFont) ||
     { name: selectedFont.replace(/['"]/g, '').split(',')[0], family: selectedFont, category: 'google' as const };
 
-  // Get recommended fonts (first 20 in googleFonts array)
-  const recommendedFonts = googleFonts.slice(0, 20);
-  const allOtherFonts = googleFonts.slice(20);
+  const selectedFontName = selectedFont.replace(/['"]/g, '').split(',')[0].trim();
 
   return (
     <div className="space-y-3">
@@ -163,53 +167,88 @@ export default function FontPicker({
         Font Family
       </label>
 
-      {/* Selected font display with dropdown */}
-      <div className="relative">
-        <select
-          value={selectedFont}
-          onChange={(e) => handleFontSelect(e.target.value)}
+      {/* Custom Dropdown */}
+      <div className="relative" ref={dropdownRef}>
+        <button
+          type="button"
+          onClick={() => !disabled && setIsDropdownOpen(!isDropdownOpen)}
           disabled={disabled}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
-          style={{ fontFamily: disabled ? undefined : selectedFont }}
+          className="w-full px-3 py-2 text-left border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 bg-white flex items-center justify-between"
         >
-          {/* Recommended Custom Fonts */}
-          <optgroup label="⭐ Recommended">
-            {customFonts.map(font => (
-              <option key={font.family} value={font.family} style={{ fontFamily: font.family }}>
-                {font.name}
-              </option>
-            ))}
-          </optgroup>
+          <span style={{ fontFamily: disabled ? undefined : selectedFont }}>
+            {selectedFontName}
+          </span>
+          <svg
+            className={`w-5 h-5 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
 
-          {/* System Fonts */}
-          <optgroup label="System Fonts">
-            {systemFonts.map(font => (
-              <option key={font.family} value={font.family} style={{ fontFamily: font.family }}>
-                {font.name}
-              </option>
-            ))}
-          </optgroup>
-
-          {/* Recommended Google Fonts */}
-          <optgroup label="Recommended for Presentations">
-            {recommendedFonts.map(font => (
-              <option key={font} value={font} style={{ fontFamily: font }}>
-                {font}
-              </option>
-            ))}
-          </optgroup>
-
-          {/* All Other Google Fonts */}
-          {allOtherFonts.length > 0 && (
-            <optgroup label="More Google Fonts">
-              {allOtherFonts.map(font => (
-                <option key={font} value={font} style={{ fontFamily: font }}>
-                  {font}
-                </option>
+        {/* Dropdown Menu */}
+        {isDropdownOpen && !disabled && (
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+            {/* Recommended Custom Fonts */}
+            <div className="border-b border-gray-200">
+              <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50">
+                ⭐ Recommended
+              </div>
+              {customFonts.map(font => (
+                <button
+                  key={font.family}
+                  onClick={() => handleFontSelect(font.family)}
+                  className={`w-full px-4 py-2.5 text-left hover:bg-blue-50 transition-colors ${
+                    selectedFont === font.family ? 'bg-blue-100' : ''
+                  }`}
+                  style={{ fontFamily: font.family }}
+                >
+                  {font.name}
+                </button>
               ))}
-            </optgroup>
-          )}
-        </select>
+            </div>
+
+            {/* System Fonts */}
+            <div className="border-b border-gray-200">
+              <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50">
+                System Fonts
+              </div>
+              {systemFonts.map(font => (
+                <button
+                  key={font.family}
+                  onClick={() => handleFontSelect(font.family)}
+                  className={`w-full px-4 py-2.5 text-left hover:bg-blue-50 transition-colors ${
+                    selectedFont === font.family ? 'bg-blue-100' : ''
+                  }`}
+                  style={{ fontFamily: font.family }}
+                >
+                  {font.name}
+                </button>
+              ))}
+            </div>
+
+            {/* Recommended Google Fonts */}
+            <div>
+              <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50">
+                Recommended for Presentations
+              </div>
+              {googleFonts.map(font => (
+                <button
+                  key={font}
+                  onClick={() => handleFontSelect(font)}
+                  className={`w-full px-4 py-2.5 text-left hover:bg-blue-50 transition-colors ${
+                    selectedFont === font ? 'bg-blue-100' : ''
+                  }`}
+                  style={{ fontFamily: font }}
+                >
+                  {font}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Download link for custom fonts */}
@@ -249,7 +288,7 @@ export default function FontPicker({
                     key={font}
                     onClick={() => {
                       handleFontSelect(font);
-                      setSearchTerm(''); // Clear search after selection
+                      setSearchTerm('');
                     }}
                     className="w-full px-4 py-3 text-left hover:bg-blue-50 border-b border-gray-100 last:border-b-0 transition-colors text-gray-900"
                     style={{ fontFamily: font }}
