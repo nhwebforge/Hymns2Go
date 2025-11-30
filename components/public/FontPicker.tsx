@@ -44,14 +44,39 @@ export default function FontPicker({
     }
   ];
 
-  // System fonts
+  // System fonts (widely available on Windows/Mac)
   const systemFonts: FontOption[] = [
     { name: 'Arial', family: 'Arial, sans-serif', category: 'system' },
     { name: 'Helvetica', family: 'Helvetica, sans-serif', category: 'system' },
+    { name: 'Calibri', family: 'Calibri, sans-serif', category: 'system' },
     { name: 'Verdana', family: 'Verdana, sans-serif', category: 'system' },
     { name: 'Tahoma', family: 'Tahoma, sans-serif', category: 'system' },
+    { name: 'Trebuchet MS', family: '"Trebuchet MS", sans-serif', category: 'system' },
     { name: 'Georgia', family: 'Georgia, serif', category: 'system' },
     { name: 'Times New Roman', family: '"Times New Roman", serif', category: 'system' },
+  ];
+
+  // Recommended Google Fonts for presentations
+  const defaultRecommendedFonts = [
+    'Roboto',
+    'Open Sans',
+    'Lato',
+    'Montserrat',
+    'Inter',
+    'Noto Sans',
+    'Fira Sans',
+    'Source Sans Pro',
+    'Raleway',
+    'Nunito',
+    'Quicksand',
+    'Poppins',
+    'League Spartan',
+    'Archivo Black',
+    'Playfair Display',
+    'Libre Baskerville',
+    'Lora',
+    'Merriweather',
+    'Dosis'
   ];
 
   // Fetch Google Fonts list
@@ -59,15 +84,20 @@ export default function FontPicker({
     const fetchGoogleFonts = async () => {
       setIsLoadingFonts(true);
       try {
-        // Using a popular Google Fonts list instead of API to avoid API key requirement
-        // You can replace this with API call if you have a key
-        const popularFonts = [
-          'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Oswald',
-          'Source Sans Pro', 'Raleway', 'PT Sans', 'Merriweather',
-          'Ubuntu', 'Playfair Display', 'Nunito', 'Poppins', 'Rubik'
+        // Combine recommended fonts with any additional ones passed in
+        const recommended = recommendedGoogleFonts.length > 0
+          ? recommendedGoogleFonts
+          : defaultRecommendedFonts;
+
+        // Add more popular Google Fonts for the extended list
+        const additionalFonts = [
+          'Ubuntu', 'PT Sans', 'Rubik', 'Oswald', 'Barlow',
+          'Work Sans', 'Karla', 'DM Sans', 'Outfit', 'Manrope',
+          'Space Grotesk', 'Exo 2', 'Bebas Neue', 'Anton',
+          'Crimson Text', 'Cormorant', 'EB Garamond', 'Bitter'
         ];
 
-        setGoogleFonts([...recommendedGoogleFonts, ...popularFonts]);
+        setGoogleFonts([...recommended, ...additionalFonts]);
       } catch (error) {
         console.error('Failed to fetch Google Fonts:', error);
       } finally {
