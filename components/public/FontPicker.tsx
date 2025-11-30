@@ -204,7 +204,7 @@ export default function FontPicker({
                 <button
                   key={font.family}
                   onClick={() => handleFontSelect(font.family)}
-                  className={`w-full px-4 py-2.5 text-left hover:bg-blue-50 transition-colors ${
+                  className={`w-full px-4 py-2.5 text-left hover:bg-blue-50 transition-colors text-gray-900 font-medium ${
                     selectedFont === font.family ? 'bg-blue-100' : ''
                   }`}
                   style={{ fontFamily: font.family }}
@@ -223,7 +223,7 @@ export default function FontPicker({
                 <button
                   key={font.family}
                   onClick={() => handleFontSelect(font.family)}
-                  className={`w-full px-4 py-2.5 text-left hover:bg-blue-50 transition-colors ${
+                  className={`w-full px-4 py-2.5 text-left hover:bg-blue-50 transition-colors text-gray-900 font-medium ${
                     selectedFont === font.family ? 'bg-blue-100' : ''
                   }`}
                   style={{ fontFamily: font.family }}
@@ -242,7 +242,7 @@ export default function FontPicker({
                 <button
                   key={font}
                   onClick={() => handleFontSelect(font)}
-                  className={`w-full px-4 py-2.5 text-left hover:bg-blue-50 transition-colors ${
+                  className={`w-full px-4 py-2.5 text-left hover:bg-blue-50 transition-colors text-gray-900 font-medium ${
                     selectedFont === font ? 'bg-blue-100' : ''
                   }`}
                   style={{ fontFamily: font }}
