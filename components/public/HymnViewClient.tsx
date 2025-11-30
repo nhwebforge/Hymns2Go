@@ -71,8 +71,11 @@ export default function HymnViewClient({
           includeVerseNumbers={includeVerseNumbers}
           stripPunctuation={stripPunctuation}
           onSlidesChange={setEditedSlides}
-          backgroundColor={includeFormatting ? backgroundColor : '#1F2937'}
+          backgroundColor={backgroundColor}
           textColor={includeFormatting ? textColor : '#FFFFFF'}
+          includeShadow={includeFormatting && includeShadow}
+          includeOutline={includeFormatting && includeOutline}
+          outlineColor={outlineColor}
         />
       </div>
     </div>

@@ -13,6 +13,9 @@ interface HymnPreviewProps {
   onSlidesChange?: (slides: { slideIndex: number; lines: string[] }[]) => void;
   backgroundColor?: string;
   textColor?: string;
+  includeShadow?: boolean;
+  includeOutline?: boolean;
+  outlineColor?: string;
 }
 
 export default function HymnPreview({
@@ -24,7 +27,10 @@ export default function HymnPreview({
   stripPunctuation: shouldStripPunctuation,
   onSlidesChange,
   backgroundColor = '#1F2937',
-  textColor = '#FFFFFF'
+  textColor = '#FFFFFF',
+  includeShadow = false,
+  includeOutline = false,
+  outlineColor = '#000000'
 }: HymnPreviewProps) {
   const baseSlides = useMemo(() => formatAsSlides(structure, linesPerSlide), [structure, linesPerSlide]);
 
@@ -35,6 +41,48 @@ export default function HymnPreview({
 
   // Track which sections we've seen to only show label on first slide
   const seenSections = new Set<string>();
+
+  // Generate text style with shadow and outline
+  const getTextStyle = (isTitle: boolean = false) => {
+    const styles: React.CSSProperties = {
+      color: textColor
+    };
+
+    const shadows: string[] = [];
+
+    // Add text shadow (bottom-right at 315 degrees, 5px offset)
+    if (includeShadow) {
+      // Calculate shadow offset for 315 degrees (bottom-right)
+      // 315 degrees = -45 degrees from horizontal
+      const angle = 315 * (Math.PI / 180);
+      const distance = 5;
+      const x = Math.cos(angle) * distance;
+      const y = Math.sin(angle) * distance;
+      shadows.push(`${x}px ${y}px 0px rgba(0, 0, 0, 1)`);
+    }
+
+    // Add text outline/stroke (3px)
+    if (includeOutline) {
+      const strokeWidth = 3;
+      // Create multiple shadows in a circle to simulate stroke
+      for (let i = 0; i < 8; i++) {
+        const angle = (i * 45) * (Math.PI / 180);
+        const x = Math.cos(angle) * strokeWidth;
+        const y = Math.sin(angle) * strokeWidth;
+        shadows.push(`${x}px ${y}px 0px ${outlineColor}`);
+      }
+    }
+
+    if (shadows.length > 0) {
+      styles.textShadow = shadows.join(', ');
+    }
+
+    if (isTitle) {
+      styles.fontWeight = 'bold';
+    }
+
+    return styles;
+  };
 
   // Get the lines for a slide, using edited version if available
   const getSlideLines = (slideIndex: number, originalLines: string[]) => {
@@ -158,13 +206,12 @@ export default function HymnPreview({
               Title
             </div>
             <div
-              className="rounded-lg p-6 flex items-center justify-center aspect-[4/3]"
+              className="rounded-lg p-6 flex items-center justify-center aspect-[16/9]"
               style={{
-                backgroundColor: backgroundColor === 'transparent' ? 'transparent' : backgroundColor,
-                color: textColor
+                backgroundColor: backgroundColor === 'transparent' ? 'transparent' : backgroundColor
               }}
             >
-              <h3 className="text-2xl font-bold text-center">{title}</h3>
+              <h3 className="text-2xl text-center" style={getTextStyle(true)}>{title}</h3>
             </div>
           </div>
         )}
@@ -225,10 +272,9 @@ export default function HymnPreview({
               )}
               <div
                 onClick={() => handleSlideClick(index, getSlideLines(index, [...slide.lines]))}
-                className="rounded-lg p-6 flex items-center justify-center aspect-[4/3] cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all relative group"
+                className="rounded-lg p-6 flex items-center justify-center aspect-[16/9] cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all relative group"
                 style={{
-                  backgroundColor: backgroundColor === 'transparent' ? 'transparent' : backgroundColor,
-                  color: textColor
+                  backgroundColor: backgroundColor === 'transparent' ? 'transparent' : backgroundColor
                 }}
               >
                 {isEdited && (
@@ -237,7 +283,7 @@ export default function HymnPreview({
                 <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/10 rounded-lg transition-all"></div>
                 <div className="text-center space-y-4 relative z-10">
                   {slideLines.map((line, lineIndex) => (
-                    <p key={lineIndex} className="text-lg leading-tight">
+                    <p key={lineIndex} className="text-lg leading-tight" style={getTextStyle()}>
                       {line}
                     </p>
                   ))}
