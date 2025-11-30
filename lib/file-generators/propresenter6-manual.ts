@@ -37,7 +37,7 @@ function colorToString(color: RgbColor): string {
   return `${color.r} ${color.g} ${color.b} ${a}`;
 }
 
-function generateRTF(text: string, textColor: RgbColor, includeOutline: boolean, outlineColor: RgbColor): string {
+function generateRTF(text: string, textColor: RgbColor, includeOutline: boolean, outlineColor: RgbColor, isTitle: boolean = false): string {
   const textR = Math.round(textColor.r * 255);
   const textG = Math.round(textColor.g * 255);
   const textB = Math.round(textColor.b * 255);
@@ -50,7 +50,11 @@ function generateRTF(text: string, textColor: RgbColor, includeOutline: boolean,
     ? `{\\colortbl;\\red255\\green255\\blue255;\\red${textR}\\green${textG}\\blue${textB};\\red${outlineR}\\green${outlineG}\\blue${outlineB};}`
     : `{\\colortbl;\\red255\\green255\\blue255;\\red${textR}\\green${textG}\\blue${textB};}`;
 
-  const rtf = `{\\rtf1\\ansi\\ansicpg1252\\cocoartf1038\\cocoasubrtf320{\\fonttbl\\f0\\fswiss\\fcharset0 Helvetica;}${colorTable}\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\\pardirnatural\\f0\\fs280 \\cf1 ${text.replace(/\n/g, '\\\\\\n')}}`;
+  // Title slides use larger font (160), regular slides use 140
+  const fontSize = isTitle ? 160 : 140;
+
+  // RTF uses actual newline character (not \\n), and sa1400 for paragraph spacing
+  const rtf = `{\\rtf1\\ansi\\ansicpg1252\\cocoartf1038\\cocoasubrtf320{\\fonttbl\\f0\\fswiss\\fcharset0 Helvetica;}${colorTable}\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\sa1400\\qc\\pardirnatural\\f0\\fs${fontSize * 2} \\cf1 ${text.replace(/\n/g, '\\\n')}}`;
 
   return Buffer.from(rtf, 'utf-8').toString('base64');
 }
@@ -175,7 +179,8 @@ export function generateProPresenter6Manual(
     group.slides.forEach(slide => {
       const slideText = slide.lines.join('\n');
       const plainTextBase64 = Buffer.from(slideText, 'utf-8').toString('base64');
-      const rtfBase64 = generateRTF(slideText, textColor, includeOutline, outlineColor);
+      const isTitle = slide.sectionType === 'title';
+      const rtfBase64 = generateRTF(slideText, textColor, includeOutline, outlineColor, isTitle);
 
       xml += `
         <RVDisplaySlide backgroundColor="${bgColor}" highlightColor="0 0 0 0" drawingBackgroundColor="false" enabled="true" hotKey="" label="" notes="" UUID="${uuidv4().toUpperCase()}" chordChartPath="">

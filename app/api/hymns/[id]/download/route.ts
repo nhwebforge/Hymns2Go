@@ -207,11 +207,11 @@ async function handleDownloadRequest(
           ccliNumber: hymn.ccliNumber || undefined,
           copyrightYear: hymn.year || undefined,
           ...(includeFormatting && bgRgb && textRgb && outlineRgb && {
-            backgroundColor: bgRgb,
-            textColor: textRgb,
+            backgroundColor: { r: bgRgb.r / 255, g: bgRgb.g / 255, b: bgRgb.b / 255 },
+            textColor: { r: textRgb.r / 255, g: textRgb.g / 255, b: textRgb.b / 255 },
             includeShadow,
             includeOutline,
-            outlineColor: outlineRgb
+            outlineColor: { r: outlineRgb.r / 255, g: outlineRgb.g / 255, b: outlineRgb.b / 255 }
           })
         });
 
