@@ -210,9 +210,9 @@ export default function HymnPreview({
               Title
             </div>
             <div
-              className="rounded-lg p-6 flex items-center justify-center aspect-[16/9]"
+              className={`rounded-lg p-6 flex items-center justify-center aspect-[16/9] ${backgroundColor === 'transparent' ? 'bg-checkerboard' : ''}`}
               style={{
-                backgroundColor: backgroundColor === 'transparent' ? 'transparent' : backgroundColor
+                backgroundColor: backgroundColor === 'transparent' ? undefined : backgroundColor
               }}
             >
               <h3 className="text-2xl text-center" style={getTextStyle(true)}>{title}</h3>
@@ -276,9 +276,9 @@ export default function HymnPreview({
               )}
               <div
                 onClick={() => handleSlideClick(index, getSlideLines(index, [...slide.lines]))}
-                className="rounded-lg p-6 flex items-center justify-center aspect-[16/9] cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all relative group"
+                className={`rounded-lg p-6 flex items-center justify-center aspect-[16/9] cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all relative group ${backgroundColor === 'transparent' ? 'bg-checkerboard' : ''}`}
                 style={{
-                  backgroundColor: backgroundColor === 'transparent' ? 'transparent' : backgroundColor
+                  backgroundColor: backgroundColor === 'transparent' ? undefined : backgroundColor
                 }}
               >
                 {isEdited && (

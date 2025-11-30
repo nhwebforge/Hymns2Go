@@ -217,22 +217,16 @@ export default function DownloadOptions({
             />
           </div>
 
-          {/* Background Color */}
+          {/* Background Colour */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-2">
-              Background Color
+              Background Colour
             </label>
             <div className="flex gap-2 items-center">
-              <input
-                type="color"
-                value={backgroundColor}
-                onChange={(e) => setBackgroundColor(e.target.value)}
-                disabled={!includeFormatting}
-                className="h-10 w-20 rounded border border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-              />
+              <div className={`h-10 w-10 flex-shrink-0 rounded border border-gray-300 ${backgroundColor === 'transparent' ? 'bg-checkerboard' : ''}`} style={{ backgroundColor: backgroundColor === 'transparent' ? undefined : backgroundColor }}></div>
               <input
                 type="text"
-                value={backgroundColor}
+                value={backgroundColor === 'transparent' ? 'Transparent' : backgroundColor}
                 onChange={(e) => setBackgroundColor(e.target.value)}
                 disabled={!includeFormatting}
                 placeholder="#000000"
@@ -241,29 +235,23 @@ export default function DownloadOptions({
               <button
                 onClick={() => setBackgroundColor('transparent')}
                 disabled={!includeFormatting}
-                className="px-3 py-2 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-2 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               >
-                Clear
+                Transparent
               </button>
             </div>
           </div>
 
-          {/* Text Color */}
+          {/* Text Colour */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-2">
-              Text Color
+              Text Colour
             </label>
             <div className="flex gap-2 items-center">
-              <input
-                type="color"
-                value={textColor}
-                onChange={(e) => setTextColor(e.target.value)}
-                disabled={!includeFormatting}
-                className="h-10 w-20 rounded border border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-              />
+              <div className={`h-10 w-10 flex-shrink-0 rounded border border-gray-300 ${textColor === 'transparent' ? 'bg-checkerboard' : ''}`} style={{ backgroundColor: textColor === 'transparent' ? undefined : textColor }}></div>
               <input
                 type="text"
-                value={textColor}
+                value={textColor === 'transparent' ? 'Transparent' : textColor}
                 onChange={(e) => setTextColor(e.target.value)}
                 disabled={!includeFormatting}
                 placeholder="#FFFFFF"
@@ -302,19 +290,13 @@ export default function DownloadOptions({
             {includeOutline && (
               <div className="ml-6">
                 <label className="block text-xs font-medium text-gray-700 mb-2">
-                  Outline Color
+                  Outline Colour
                 </label>
                 <div className="flex gap-2 items-center">
-                  <input
-                    type="color"
-                    value={outlineColor}
-                    onChange={(e) => setOutlineColor(e.target.value)}
-                    disabled={!includeFormatting}
-                    className="h-10 w-20 rounded border border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-                  />
+                  <div className={`h-10 w-10 flex-shrink-0 rounded border border-gray-300 ${outlineColor === 'transparent' ? 'bg-checkerboard' : ''}`} style={{ backgroundColor: outlineColor === 'transparent' ? undefined : outlineColor }}></div>
                   <input
                     type="text"
-                    value={outlineColor}
+                    value={outlineColor === 'transparent' ? 'Transparent' : outlineColor}
                     onChange={(e) => setOutlineColor(e.target.value)}
                     disabled={!includeFormatting}
                     placeholder="#000000"

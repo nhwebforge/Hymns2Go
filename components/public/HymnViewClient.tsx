@@ -31,6 +31,25 @@ export default function HymnViewClient({
   const [includeOutline, setIncludeOutline] = useState(false);
   const [outlineColor, setOutlineColor] = useState('#000000');
 
+  // Default values for formatting
+  const defaultFontFamily = 'CMG Sans';
+  const defaultBackgroundColor = '#000000';
+  const defaultTextColor = '#FFFFFF';
+  const defaultOutlineColor = '#000000';
+
+  // Reset to defaults when formatting is disabled
+  const handleFormattingToggle = (enabled: boolean) => {
+    setIncludeFormatting(enabled);
+    if (!enabled) {
+      setFontFamily(defaultFontFamily);
+      setBackgroundColor(defaultBackgroundColor);
+      setTextColor(defaultTextColor);
+      setIncludeShadow(false);
+      setIncludeOutline(false);
+      setOutlineColor(defaultOutlineColor);
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Download Options */}
@@ -48,7 +67,7 @@ export default function HymnViewClient({
           setStripPunctuation={setStripPunctuation}
           editedSlides={editedSlides}
           includeFormatting={includeFormatting}
-          setIncludeFormatting={setIncludeFormatting}
+          setIncludeFormatting={handleFormattingToggle}
           fontFamily={fontFamily}
           setFontFamily={setFontFamily}
           backgroundColor={backgroundColor}
