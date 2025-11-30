@@ -164,7 +164,7 @@ export function generateProPresenter6Manual(
 
   // Generate XML
   let xml = `<?xml version="1.0" encoding="utf-8"?>
-<RVPresentationDocument CCLIArtistCredits="" CCLIAuthor="${escapeXml(author)}" CCLICopyrightYear="${copyrightYear}" CCLIDisplay="false" CCLIPublisher="${escapeXml(publisher)}" CCLISongNumber="${ccliNumber}" CCLISongTitle="${escapeXml(hymnTitle)}" category="Hymn" notes="" lastDateUsed="${new Date().toISOString()}" height="1080" width="1920" backgroundColor="${colorToString(backgroundColor)}" buildNumber="6016" chordChartPath="" docType="0" drawingBackgroundColor="false" resourcesDirectory="" selectedArrangementID="" os="1" usedCount="0" versionNumber="600">
+<RVPresentationDocument CCLIArtistCredits="" CCLIAuthor="${escapeXml(author)}" CCLICopyrightYear="${copyrightYear}" CCLIDisplay="false" CCLIPublisher="${escapeXml(publisher)}" CCLISongNumber="${ccliNumber}" CCLISongTitle="${escapeXml(hymnTitle)}" category="Hymn" notes="" lastDateUsed="${new Date().toISOString()}" height="1080" width="1920" backgroundColor="${colorToString(backgroundColor)}" buildNumber="6016" chordChartPath="" docType="0" drawingBackgroundColor="${includeBackground}" resourcesDirectory="" selectedArrangementID="" os="1" usedCount="0" versionNumber="600">
   <RVTransition rvXMLIvarName="transitionObject" transitionType="-1" transitionDirection="0" transitionDuration="1" motionEnabled="false" motionDuration="0" motionSpeed="0" groupIndex="0" orderIndex="0" slideBuildAction="0" slideBuildDelay="0"/>
   <RVTimeline rvXMLIvarName="timeline" timeOffset="0" duration="0" selectedMediaTrackIndex="0" loop="false">
     <array rvXMLIvarName="timeCues"/>
@@ -184,7 +184,7 @@ export function generateProPresenter6Manual(
       const rtfBase64 = generateRTF(slideText, textColor, includeOutline, outlineColor, isTitle);
 
       xml += `
-        <RVDisplaySlide backgroundColor="${bgColor}" highlightColor="0 0 0 0" drawingBackgroundColor="false" enabled="true" hotKey="" label="" notes="" UUID="${uuidv4().toUpperCase()}" chordChartPath="">
+        <RVDisplaySlide backgroundColor="${bgColor}" highlightColor="0 0 0 0" drawingBackgroundColor="${includeBackground}" enabled="true" hotKey="" label="" notes="" UUID="${uuidv4().toUpperCase()}" chordChartPath="">
           <array rvXMLIvarName="cues"/>
           <array rvXMLIvarName="displayElements">
             <RVTextElement displayName="Default" UUID="${uuidv4().toUpperCase()}" typeID="0" displayDelay="0" locked="false" persistent="0" fromTemplate="false" opacity="1" source="" bezelRadius="0" rotation="0" drawingFill="false" drawingShadow="${includeShadow}" drawingStroke="${includeOutline}" fillColor="1 1 1 0" adjustsHeightToFit="false" verticalAlignment="0" revealType="0">
