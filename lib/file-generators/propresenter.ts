@@ -141,7 +141,6 @@ function generateProPresenter6XML(
       category: category,
       height: 1080,
       width: 1920,
-      backgroundColor: backgroundColor,
     },
     slideGroups: slideGroups,
     slideTextFormatting: {
