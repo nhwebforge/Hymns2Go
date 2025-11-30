@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import FontPicker from './FontPicker';
 
 interface DownloadOptionsProps {
   hymnId: string;
@@ -27,6 +28,8 @@ interface DownloadOptionsProps {
   setIncludeOutline: (value: boolean) => void;
   outlineColor: string;
   setOutlineColor: (value: string) => void;
+  fontFamily: string;
+  setFontFamily: (value: string) => void;
 }
 
 export default function DownloadOptions({
@@ -52,7 +55,9 @@ export default function DownloadOptions({
   includeOutline,
   setIncludeOutline,
   outlineColor,
-  setOutlineColor
+  setOutlineColor,
+  fontFamily,
+  setFontFamily
 }: DownloadOptionsProps) {
   const [downloading, setDownloading] = useState(false);
 
@@ -71,6 +76,7 @@ export default function DownloadOptions({
         includeShadow: includeShadow.toString(),
         includeOutline: includeOutline.toString(),
         outlineColor: outlineColor,
+        fontFamily: fontFamily,
       });
 
       let response;
@@ -202,6 +208,14 @@ export default function DownloadOptions({
             ? 'border-blue-300 bg-blue-50/30'
             : 'border-gray-200 bg-gray-50 opacity-60'
         }`}>
+          {/* Font Selection */}
+          <div>
+            <FontPicker
+              selectedFont={fontFamily}
+              onFontChange={setFontFamily}
+            />
+          </div>
+
           {/* Background Color */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-2">

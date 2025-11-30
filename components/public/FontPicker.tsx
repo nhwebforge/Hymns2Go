@@ -76,7 +76,8 @@ export default function FontPicker({
     'Libre Baskerville',
     'Lora',
     'Merriweather',
-    'Dosis'
+    'Dosis',
+    'Mulish'
   ];
 
   // Fetch Google Fonts list

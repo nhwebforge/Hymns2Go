@@ -24,6 +24,7 @@ export default function HymnViewClient({
 
   // Formatting options
   const [includeFormatting, setIncludeFormatting] = useState(false);
+  const [fontFamily, setFontFamily] = useState('CMG Sans');
   const [backgroundColor, setBackgroundColor] = useState('#000000');
   const [textColor, setTextColor] = useState('#FFFFFF');
   const [includeShadow, setIncludeShadow] = useState(false);
@@ -48,6 +49,8 @@ export default function HymnViewClient({
           editedSlides={editedSlides}
           includeFormatting={includeFormatting}
           setIncludeFormatting={setIncludeFormatting}
+          fontFamily={fontFamily}
+          setFontFamily={setFontFamily}
           backgroundColor={backgroundColor}
           setBackgroundColor={setBackgroundColor}
           textColor={textColor}
@@ -71,6 +74,7 @@ export default function HymnViewClient({
           includeVerseNumbers={includeVerseNumbers}
           stripPunctuation={stripPunctuation}
           onSlidesChange={setEditedSlides}
+          fontFamily={fontFamily}
           backgroundColor={backgroundColor}
           textColor={includeFormatting ? textColor : '#FFFFFF'}
           includeShadow={includeFormatting && includeShadow}

@@ -11,6 +11,7 @@ interface HymnPreviewProps {
   includeVerseNumbers: boolean;
   stripPunctuation: boolean;
   onSlidesChange?: (slides: { slideIndex: number; lines: string[] }[]) => void;
+  fontFamily?: string;
   backgroundColor?: string;
   textColor?: string;
   includeShadow?: boolean;
@@ -26,6 +27,7 @@ export default function HymnPreview({
   includeVerseNumbers,
   stripPunctuation: shouldStripPunctuation,
   onSlidesChange,
+  fontFamily = 'CMG Sans',
   backgroundColor = '#1F2937',
   textColor = '#FFFFFF',
   includeShadow = false,
@@ -45,6 +47,7 @@ export default function HymnPreview({
   // Generate text style with shadow and outline
   const getTextStyle = (isTitle: boolean = false) => {
     const styles: React.CSSProperties = {
+      fontFamily: fontFamily,
       color: textColor
     };
 
