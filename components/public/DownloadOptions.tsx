@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { HexColorPicker } from 'react-colorful';
+import { IconFile, IconFiles } from '@tabler/icons-react';
 import FontPicker from './FontPicker';
 
 interface DownloadOptionsProps {
@@ -514,21 +515,31 @@ export default function DownloadOptions({
           </button>
         </div>
 
-        <button
-          onClick={() => handleDownload('text')}
-          disabled={downloading}
-          className="w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
-        >
-          {downloading ? 'Downloading...' : 'Download as Text'}
-        </button>
+        <div className="flex items-stretch gap-3">
+          <div className="w-12 flex-shrink-0 flex items-center justify-center">
+            <IconFile size={48} className="text-gray-600" stroke={1.5} />
+          </div>
+          <button
+            onClick={() => handleDownload('text')}
+            disabled={downloading}
+            className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          >
+            {downloading ? 'Downloading...' : 'Download as Text'}
+          </button>
+        </div>
 
-        <button
-          onClick={() => handleDownload('text-per-slide')}
-          disabled={downloading}
-          className="w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
-        >
-          {downloading ? 'Downloading...' : 'Download as Text (Per Slide)'}
-        </button>
+        <div className="flex items-stretch gap-3">
+          <div className="w-12 flex-shrink-0 flex items-center justify-center">
+            <IconFiles size={48} className="text-gray-600" stroke={1.5} />
+          </div>
+          <button
+            onClick={() => handleDownload('text-per-slide')}
+            disabled={downloading}
+            className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          >
+            {downloading ? 'Downloading...' : 'Download as Text (Per Slide)'}
+          </button>
+        </div>
       </div>
 
       <div className="mt-6 pt-6 border-t text-sm text-gray-600">
