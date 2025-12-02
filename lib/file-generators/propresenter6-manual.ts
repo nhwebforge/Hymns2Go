@@ -184,7 +184,7 @@ export function generateProPresenter6Manual(
     group.slides.forEach(slide => {
       const slideText = slide.lines.join('\n');
       const plainTextBase64 = Buffer.from(slideText, 'utf-8').toString('base64');
-      const isTitle = slide.sectionType === 'title';
+      const isTitle = group.name === 'Intro' && slide.lines.length === 1 && slide.lines[0] === hymnTitle;
       const rtfBase64 = generateRTF(slideText, textColor, includeOutline, outlineColor, fontFamily, isTitle);
 
       xml += `
