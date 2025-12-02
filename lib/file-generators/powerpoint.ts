@@ -4,6 +4,7 @@ import { Slide } from '../hymn-processor/parser';
 export interface PowerPointOptions {
   fontSize?: number;
   fontFace?: string;
+  fontFamily?: string;
   textColor?: string;
   backgroundColor?: string;
   includeTitleSlide?: boolean;
@@ -26,7 +27,8 @@ export async function generatePowerPoint(
   // Set default options
   const {
     fontSize = 32,
-    fontFace = 'Arial',
+    fontFace,
+    fontFamily = 'Arial',
     textColor = '000000',
     backgroundColor = 'FFFFFF',
     includeTitleSlide = true,
@@ -35,6 +37,9 @@ export async function generatePowerPoint(
     includeOutline = false,
     outlineColor = '000000'
   } = options;
+
+  // Use fontFamily if provided, otherwise fall back to fontFace or default
+  const actualFontFace = fontFamily || fontFace || 'Arial';
 
   // Add title slide if requested
   if (includeTitleSlide) {
@@ -50,7 +55,7 @@ export async function generatePowerPoint(
       bold: true,
       color: textColor,
       align: 'center',
-      fontFace
+      fontFace: actualFontFace
     };
 
     if (includeShadow) {
@@ -114,7 +119,7 @@ export async function generatePowerPoint(
       color: textColor,
       align: 'center',
       valign: 'middle',
-      fontFace
+      fontFace: actualFontFace
     };
 
     if (includeShadow) {

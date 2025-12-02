@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { HexColorPicker } from 'react-colorful';
 import FontPicker from './FontPicker';
 
 interface DownloadOptionsProps {
@@ -60,6 +61,49 @@ export default function DownloadOptions({
   setFontFamily
 }: DownloadOptionsProps) {
   const [downloading, setDownloading] = useState(false);
+  const [activeColorPicker, setActiveColorPicker] = useState<'background' | 'text' | 'outline' | null>(null);
+
+  const backgroundPickerRef = useRef<HTMLDivElement>(null);
+  const textPickerRef = useRef<HTMLDivElement>(null);
+  const outlinePickerRef = useRef<HTMLDivElement>(null);
+
+  // Validate hex color code
+  const isValidHex = (color: string): boolean => {
+    if (color === 'transparent') return true;
+    return /^#[0-9A-F]{6}$/i.test(color);
+  };
+
+  // Handle color change with validation
+  const handleColorChange = (value: string, setter: (value: string) => void, currentValue: string) => {
+    const uppercaseValue = value.toUpperCase();
+    // Allow typing in progress or valid hex
+    if (uppercaseValue === '' || uppercaseValue === '#' || /^#[0-9A-F]{0,6}$/i.test(uppercaseValue)) {
+      setter(uppercaseValue);
+    } else if (!isValidHex(uppercaseValue)) {
+      // Revert to current value if invalid
+      setter(currentValue);
+    } else {
+      setter(uppercaseValue);
+    }
+  };
+
+  // Close color picker when clicking outside
+  useEffect(() => {
+    if (!activeColorPicker) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        !backgroundPickerRef.current?.contains(event.target as Node) &&
+        !textPickerRef.current?.contains(event.target as Node) &&
+        !outlinePickerRef.current?.contains(event.target as Node)
+      ) {
+        setActiveColorPicker(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [activeColorPicker]);
 
   const handleDownload = async (format: string) => {
     setDownloading(true);
@@ -191,6 +235,23 @@ export default function DownloadOptions({
         </label>
       </div>
 
+      {/* CMG Sans Font Download Link */}
+      <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-gray-700">
+            Download CMG Sans font for presentations
+          </span>
+          <a
+            href="https://www.churchmotiongraphics.com/cmg-sans/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-700 font-medium underline whitespace-nowrap"
+          >
+            Download
+          </a>
+        </div>
+      </div>
+
       {/* Formatting Options */}
       <div className="mb-6">
         <label className="flex items-center mb-3">
@@ -217,46 +278,110 @@ export default function DownloadOptions({
             />
           </div>
 
-          {/* Background Colour */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-2">
-              Background Colour
-            </label>
-            <div className="flex gap-2 items-center">
-              <div className={`h-10 w-10 flex-shrink-0 rounded border border-gray-300 ${backgroundColor === 'transparent' ? 'bg-checkerboard' : ''}`} style={{ backgroundColor: backgroundColor === 'transparent' ? undefined : backgroundColor }}></div>
-              <input
-                type="text"
-                value={backgroundColor === 'transparent' ? 'Transparent' : backgroundColor}
-                onChange={(e) => setBackgroundColor(e.target.value)}
-                disabled={!includeFormatting}
-                placeholder="#000000"
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md disabled:bg-gray-100 disabled:cursor-not-allowed"
-              />
+          {/* Background and Text Colours Side by Side */}
+          <div className="flex gap-3 items-end">
+            {/* Background Colour */}
+            <div className="flex-1 relative" ref={backgroundPickerRef}>
+              <label className="block text-xs font-medium text-gray-700 mb-2">
+                Background Colour
+              </label>
+              <div className="flex gap-2 items-center">
+                <div
+                  className={`h-[1.875rem] w-[1.875rem] flex-shrink-0 rounded border border-gray-300 ${backgroundColor === 'transparent' ? 'bg-checkerboard' : ''} ${!includeFormatting ? 'cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}`}
+                  style={{ backgroundColor: backgroundColor === 'transparent' ? undefined : backgroundColor }}
+                  onClick={() => includeFormatting && setActiveColorPicker(activeColorPicker === 'background' ? null : 'background')}
+                ></div>
+                <input
+                  type="text"
+                  value={backgroundColor === 'transparent' ? 'None' : backgroundColor.toUpperCase()}
+                  onChange={(e) => handleColorChange(e.target.value, setBackgroundColor, backgroundColor)}
+                  disabled={!includeFormatting}
+                  placeholder="#000000"
+                  className="w-[4.75rem] h-[1.875rem] px-2 text-sm border border-gray-300 rounded-md disabled:bg-gray-100 disabled:cursor-not-allowed"
+                />
+              </div>
+
+              {/* Color Picker Popup */}
+              {activeColorPicker === 'background' && includeFormatting && (
+                <div className="absolute z-50 mt-2 p-3 bg-white rounded-lg shadow-xl border border-gray-300">
+                  <HexColorPicker
+                    color={backgroundColor === 'transparent' ? '#000000' : backgroundColor}
+                    onChange={(color) => setBackgroundColor(color.toUpperCase())}
+                  />
+                  <button
+                    onClick={() => {
+                      setBackgroundColor('transparent');
+                      setActiveColorPicker(null);
+                    }}
+                    className="w-full mt-3 px-3 py-2 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300 font-medium"
+                  >
+                    None
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Swap Button */}
+            <div className="flex items-center">
               <button
-                onClick={() => setBackgroundColor('transparent')}
+                type="button"
+                onClick={() => {
+                  if (!includeFormatting) return;
+                  const tempBg = backgroundColor;
+                  setBackgroundColor(textColor);
+                  setTextColor(tempBg);
+                }}
                 disabled={!includeFormatting}
-                className="px-3 py-2 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                className="h-[1.875rem] w-[1.875rem] flex items-center justify-center rounded-md border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                title="Swap background and text colours"
               >
-                Transparent
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-gray-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                  />
+                </svg>
               </button>
             </div>
-          </div>
 
-          {/* Text Colour */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-2">
-              Text Colour
-            </label>
-            <div className="flex gap-2 items-center">
-              <div className={`h-10 w-10 flex-shrink-0 rounded border border-gray-300 ${textColor === 'transparent' ? 'bg-checkerboard' : ''}`} style={{ backgroundColor: textColor === 'transparent' ? undefined : textColor }}></div>
-              <input
-                type="text"
-                value={textColor === 'transparent' ? 'Transparent' : textColor}
-                onChange={(e) => setTextColor(e.target.value)}
-                disabled={!includeFormatting}
-                placeholder="#FFFFFF"
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md disabled:bg-gray-100 disabled:cursor-not-allowed"
-              />
+            {/* Text Colour */}
+            <div className="flex-1 relative" ref={textPickerRef}>
+              <label className="block text-xs font-medium text-gray-700 mb-2">
+                Text Colour
+              </label>
+              <div className="flex gap-2 items-center">
+                <div
+                  className={`h-[1.875rem] w-[1.875rem] flex-shrink-0 rounded border border-gray-300 ${textColor === 'transparent' ? 'bg-checkerboard' : ''} ${!includeFormatting ? 'cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}`}
+                  style={{ backgroundColor: textColor === 'transparent' ? undefined : textColor }}
+                  onClick={() => includeFormatting && setActiveColorPicker(activeColorPicker === 'text' ? null : 'text')}
+                ></div>
+                <input
+                  type="text"
+                  value={textColor === 'transparent' ? 'None' : textColor.toUpperCase()}
+                  onChange={(e) => handleColorChange(e.target.value, setTextColor, textColor)}
+                  disabled={!includeFormatting}
+                  placeholder="#FFFFFF"
+                  className="w-[4.75rem] h-[1.875rem] px-2 text-sm border border-gray-300 rounded-md disabled:bg-gray-100 disabled:cursor-not-allowed"
+                />
+              </div>
+
+              {/* Color Picker Popup */}
+              {activeColorPicker === 'text' && includeFormatting && (
+                <div className="absolute z-50 mt-2 p-3 bg-white rounded-lg shadow-xl border border-gray-300">
+                  <HexColorPicker
+                    color={textColor === 'transparent' ? '#FFFFFF' : textColor}
+                    onChange={(color) => setTextColor(color.toUpperCase())}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
@@ -270,7 +395,7 @@ export default function DownloadOptions({
                 disabled={!includeFormatting}
                 className="mr-2 h-4 w-4 disabled:cursor-not-allowed"
               />
-              <span className="text-xs text-gray-700">Include shadow</span>
+              <span className="text-xs text-gray-700">Include text shadow</span>
             </label>
           </div>
 
@@ -289,19 +414,37 @@ export default function DownloadOptions({
 
             {includeOutline && (
               <div className="ml-6">
-                <label className="block text-xs font-medium text-gray-700 mb-2">
-                  Outline Colour
-                </label>
-                <div className="flex gap-2 items-center">
-                  <div className={`h-10 w-10 flex-shrink-0 rounded border border-gray-300 ${outlineColor === 'transparent' ? 'bg-checkerboard' : ''}`} style={{ backgroundColor: outlineColor === 'transparent' ? undefined : outlineColor }}></div>
-                  <input
-                    type="text"
-                    value={outlineColor === 'transparent' ? 'Transparent' : outlineColor}
-                    onChange={(e) => setOutlineColor(e.target.value)}
-                    disabled={!includeFormatting}
-                    placeholder="#000000"
-                    className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md disabled:bg-gray-100 disabled:cursor-not-allowed"
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="relative" ref={outlinePickerRef}>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      Outline Colour
+                    </label>
+                    <div className="flex gap-2 items-center">
+                      <div
+                        className={`h-[1.875rem] w-[1.875rem] flex-shrink-0 rounded border border-gray-300 ${outlineColor === 'transparent' ? 'bg-checkerboard' : ''} ${!includeFormatting ? 'cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}`}
+                        style={{ backgroundColor: outlineColor === 'transparent' ? undefined : outlineColor }}
+                        onClick={() => includeFormatting && setActiveColorPicker(activeColorPicker === 'outline' ? null : 'outline')}
+                      ></div>
+                      <input
+                        type="text"
+                        value={outlineColor === 'transparent' ? 'None' : outlineColor.toUpperCase()}
+                        onChange={(e) => handleColorChange(e.target.value, setOutlineColor, outlineColor)}
+                        disabled={!includeFormatting}
+                        placeholder="#000000"
+                        className="w-[4.75rem] h-[1.875rem] px-2 text-sm border border-gray-300 rounded-md disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      />
+                    </div>
+
+                    {/* Color Picker Popup */}
+                    {activeColorPicker === 'outline' && includeFormatting && (
+                      <div className="absolute z-50 mt-2 p-3 bg-white rounded-lg shadow-xl border border-gray-300">
+                        <HexColorPicker
+                          color={outlineColor === 'transparent' ? '#000000' : outlineColor}
+                          onChange={(color) => setOutlineColor(color.toUpperCase())}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { HymnStructure } from '@/lib/hymn-processor/parser';
 import DownloadOptions from './DownloadOptions';
 import HymnPreview from './HymnPreview';
@@ -10,6 +10,18 @@ interface HymnViewClientProps {
   hymnTitle: string;
   structure: HymnStructure;
 }
+
+interface FormattingPreferences {
+  includeFormatting: boolean;
+  fontFamily: string;
+  backgroundColor: string;
+  textColor: string;
+  includeShadow: boolean;
+  includeOutline: boolean;
+  outlineColor: string;
+}
+
+const PREFERENCES_KEY = 'hymns2go-formatting-preferences';
 
 export default function HymnViewClient({
   hymnId,
@@ -22,20 +34,69 @@ export default function HymnViewClient({
   const [stripPunctuation, setStripPunctuation] = useState(true);
   const [editedSlides, setEditedSlides] = useState<{ slideIndex: number; lines: string[] }[]>([]);
 
-  // Formatting options
-  const [includeFormatting, setIncludeFormatting] = useState(false);
-  const [fontFamily, setFontFamily] = useState('CMG Sans');
-  const [backgroundColor, setBackgroundColor] = useState('#000000');
-  const [textColor, setTextColor] = useState('#FFFFFF');
-  const [includeShadow, setIncludeShadow] = useState(false);
-  const [includeOutline, setIncludeOutline] = useState(false);
-  const [outlineColor, setOutlineColor] = useState('#000000');
+  // Track if we've loaded preferences to avoid saving on initial render
+  const hasLoadedPreferences = useRef(false);
 
   // Default values for formatting
   const defaultFontFamily = 'CMG Sans';
   const defaultBackgroundColor = '#000000';
   const defaultTextColor = '#FFFFFF';
   const defaultOutlineColor = '#000000';
+
+  // Formatting options - will be initialized from localStorage
+  const [includeFormatting, setIncludeFormatting] = useState(false);
+  const [fontFamily, setFontFamily] = useState(defaultFontFamily);
+  const [backgroundColor, setBackgroundColor] = useState(defaultBackgroundColor);
+  const [textColor, setTextColor] = useState(defaultTextColor);
+  const [includeShadow, setIncludeShadow] = useState(false);
+  const [includeOutline, setIncludeOutline] = useState(false);
+  const [outlineColor, setOutlineColor] = useState(defaultOutlineColor);
+
+  // Load saved preferences on mount
+  useEffect(() => {
+    // Ensure we're in the browser
+    if (typeof window === 'undefined') return;
+
+    try {
+      const savedPreferences = localStorage.getItem(PREFERENCES_KEY);
+      console.log('Loading preferences:', savedPreferences);
+
+      if (savedPreferences) {
+        const prefs: FormattingPreferences = JSON.parse(savedPreferences);
+        setIncludeFormatting(prefs.includeFormatting ?? false);
+        setFontFamily(prefs.fontFamily ?? defaultFontFamily);
+        setBackgroundColor(prefs.backgroundColor ?? defaultBackgroundColor);
+        setTextColor(prefs.textColor ?? defaultTextColor);
+        setIncludeShadow(prefs.includeShadow ?? false);
+        setIncludeOutline(prefs.includeOutline ?? false);
+        setOutlineColor(prefs.outlineColor ?? defaultOutlineColor);
+      }
+    } catch (error) {
+      console.error('Failed to load formatting preferences:', error);
+    } finally {
+      // Mark as loaded after a small delay to ensure state updates complete
+      setTimeout(() => {
+        hasLoadedPreferences.current = true;
+      }, 100);
+    }
+  }, [defaultFontFamily, defaultBackgroundColor, defaultTextColor, defaultOutlineColor]);
+
+  // Save preferences whenever they change (but not on initial load)
+  useEffect(() => {
+    if (!hasLoadedPreferences.current || typeof window === 'undefined') return;
+
+    const preferences: FormattingPreferences = {
+      includeFormatting,
+      fontFamily,
+      backgroundColor,
+      textColor,
+      includeShadow,
+      includeOutline,
+      outlineColor,
+    };
+    console.log('Saving preferences:', preferences);
+    localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences));
+  }, [includeFormatting, fontFamily, backgroundColor, textColor, includeShadow, includeOutline, outlineColor]);
 
   // Reset to defaults when formatting is disabled
   const handleFormattingToggle = (enabled: boolean) => {

@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto';
 
 export interface ProPresenter7Options {
   fontName?: string;
+  fontFamily?: string;
   fontSize?: number;
   textColor?: { r: number; g: number; b: number; a: number };
   backgroundColor?: { r: number; g: number; b: number; a: number };
@@ -31,7 +32,8 @@ export async function generateProPresenter7(
   options: ProPresenter7Options = {}
 ): Promise<Buffer> {
   const {
-    fontName = 'Helvetica',
+    fontName,
+    fontFamily = 'Helvetica',
     fontSize = 140,
     textColor = { r: 1, g: 1, b: 1, a: 1 }, // White
     backgroundColor = { r: 0, g: 0, b: 0, a: 1 }, // Black
@@ -45,6 +47,9 @@ export async function generateProPresenter7(
     includeOutline = false,
     outlineColor = { r: 0, g: 0, b: 0, a: 1 }, // Black outline
   } = options;
+
+  // Use fontFamily if provided, otherwise fall back to fontName or default
+  const actualFontName = fontFamily || fontName || 'Helvetica';
 
   console.log('=== generateProPresenter7 called ===');
   console.log('includeShadow:', includeShadow);
@@ -72,7 +77,7 @@ export async function generateProPresenter7(
 
   // Helper to convert text to RTF and base64 encode it
   const textToRTFBase64 = (text: string, isTitle: boolean = false): string => {
-    const font = isTitle ? 'Helvetica-Bold' : fontName;
+    const font = isTitle ? 'Helvetica-Bold' : actualFontName;
     const size = isTitle ? 160 : fontSize;
     const boldTag = isTitle ? '\\b' : '';
     const baselineTag = isTitle ? ' \\up0' : '';
@@ -134,7 +139,7 @@ ${expandedColorTable}
   // Helper to create a cue (slide)
   const createCue = (text: string, slideName: string, isTitle: boolean = false) => {
     const cueUUID = createUUID();
-    const slideFont = isTitle ? 'Helvetica-Bold' : fontName;
+    const slideFont = isTitle ? 'Helvetica-Bold' : actualFontName;
     const slideSize = isTitle ? 160 : fontSize;
     const isBold = isTitle;
 
@@ -222,7 +227,7 @@ ${expandedColorTable}
                           font: {
                             name: slideFont,
                             size: slideSize,
-                            family: isTitle ? 'Helvetica' : fontName,
+                            family: isTitle ? 'Helvetica' : actualFontName,
                             ...(isBold && { bold: true }),
                           },
                           textSolidFill: {

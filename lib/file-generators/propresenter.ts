@@ -10,6 +10,7 @@ export interface ProPresenterOptions {
   copyrightYear?: number;
   includeTitleSlide?: boolean;
   includeVerseNumbers?: boolean;
+  fontFamily?: string;
   backgroundColor?: { r: number; g: number; b: number };
   textColor?: { r: number; g: number; b: number };
   includeShadow?: boolean;
@@ -32,6 +33,7 @@ function generateProPresenter6XML(
     copyrightYear,
     includeTitleSlide = false,
     includeVerseNumbers = false,
+    fontFamily = 'Helvetica',
     backgroundColor = { r: 0, g: 0, b: 0 },
     textColor = { r: 1, g: 1, b: 1 },
     includeShadow = false,
@@ -49,6 +51,7 @@ function generateProPresenter6XML(
     copyrightYear,
     includeVerseNumbers,
     includeTitleSlide,
+    fontFamily,
     includeBackground,
     backgroundColor: { ...backgroundColor, a: 1 },
     textColor: { ...textColor, a: 1 },

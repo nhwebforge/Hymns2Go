@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { IconCheck } from '@tabler/icons-react';
 import { HymnStructure, formatAsSlides, stripPunctuation } from '@/lib/hymn-processor/parser';
 
 interface HymnPreviewProps {
@@ -270,7 +271,10 @@ export default function HymnPreview({
                 <div className="text-xs font-medium text-gray-600 mb-1 px-2 flex items-center gap-2">
                   {sectionLabel}
                   {isEdited && (
-                    <span className="text-blue-600">✓ Edited</span>
+                    <span className="text-blue-600 flex items-center gap-1">
+                      <IconCheck size={14} />
+                      Edited
+                    </span>
                   )}
                 </div>
               )}

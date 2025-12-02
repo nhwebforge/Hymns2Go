@@ -15,6 +15,7 @@ interface ProPresenter6Options {
   copyrightYear?: number;
   includeVerseNumbers?: boolean;
   includeTitleSlide?: boolean;
+  fontFamily?: string;
   includeBackground?: boolean;
   backgroundColor?: RgbColor;
   textColor?: RgbColor;
@@ -37,7 +38,7 @@ function colorToString(color: RgbColor): string {
   return `${color.r} ${color.g} ${color.b} ${a}`;
 }
 
-function generateRTF(text: string, textColor: RgbColor, includeOutline: boolean, outlineColor: RgbColor, isTitle: boolean = false): string {
+function generateRTF(text: string, textColor: RgbColor, includeOutline: boolean, outlineColor: RgbColor, fontFamily: string = 'Helvetica', isTitle: boolean = false): string {
   const textR = Math.round(textColor.r * 255);
   const textG = Math.round(textColor.g * 255);
   const textB = Math.round(textColor.b * 255);
@@ -55,7 +56,9 @@ function generateRTF(text: string, textColor: RgbColor, includeOutline: boolean,
   const boldTag = isTitle ? '\\b' : '';
 
   // RTF uses actual newline character (not \\n), and sa1400 for paragraph spacing
-  const rtf = `{\\rtf1\\ansi\\ansicpg1252\\cocoartf1038\\cocoasubrtf320{\\fonttbl\\f0\\fswiss\\fcharset0 Helvetica;}${colorTable}\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\sa1400\\qc\\pardirnatural\\f0${boldTag}\\fs${fontSize * 2} \\cf1 ${text.replace(/\n/g, '\\\n')}}`;
+  // Replace spaces in font name with backslash-space for RTF
+  const rtfFontName = fontFamily.replace(/ /g, '\\ ');
+  const rtf = `{\\rtf1\\ansi\\ansicpg1252\\cocoartf1038\\cocoasubrtf320{\\fonttbl\\f0\\fswiss\\fcharset0 ${rtfFontName};}${colorTable}\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\sa1400\\qc\\pardirnatural\\f0${boldTag}\\fs${fontSize * 2} \\cf1 ${text.replace(/\n/g, '\\\n')}}`;
 
   return Buffer.from(rtf, 'utf-8').toString('base64');
 }
@@ -85,6 +88,7 @@ export function generateProPresenter6Manual(
     copyrightYear = 0,
     includeVerseNumbers = false,
     includeTitleSlide = true,
+    fontFamily = 'Helvetica',
     includeBackground = false,
     backgroundColor = { r: 0, g: 0, b: 0, a: 1 },
     textColor = { r: 1, g: 1, b: 1, a: 1 },
@@ -181,7 +185,7 @@ export function generateProPresenter6Manual(
       const slideText = slide.lines.join('\n');
       const plainTextBase64 = Buffer.from(slideText, 'utf-8').toString('base64');
       const isTitle = slide.sectionType === 'title';
-      const rtfBase64 = generateRTF(slideText, textColor, includeOutline, outlineColor, isTitle);
+      const rtfBase64 = generateRTF(slideText, textColor, includeOutline, outlineColor, fontFamily, isTitle);
 
       xml += `
         <RVDisplaySlide backgroundColor="${bgColor}" highlightColor="0 0 0 0" drawingBackgroundColor="${includeBackground}" enabled="true" hotKey="" label="" notes="" UUID="${uuidv4().toUpperCase()}" chordChartPath="">

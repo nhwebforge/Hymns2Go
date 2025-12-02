@@ -40,6 +40,7 @@ async function handleDownloadRequest(
 
   // Formatting options
   const includeFormatting = searchParams.get('includeFormatting') === 'true';
+  const fontFamily = searchParams.get('fontFamily') || 'CMG Sans';
   const backgroundColor = searchParams.get('backgroundColor') || '#000000';
   const textColor = searchParams.get('textColor') || '#FFFFFF';
   const includeShadow = searchParams.get('includeShadow') === 'true';
@@ -53,6 +54,7 @@ async function handleDownloadRequest(
     includeTitleSlide,
     shouldStripPunctuation,
     includeFormatting,
+    fontFamily,
     backgroundColor,
     textColor,
     includeShadow,
@@ -180,6 +182,7 @@ async function handleDownloadRequest(
           includeTitleSlide,
           includeVerseNumbers,
           ...(includeFormatting && {
+            fontFamily,
             backgroundColor: backgroundColor === 'transparent' ? 'FFFFFF' : backgroundColor.replace('#', ''),
             textColor: textColor.replace('#', ''),
             includeShadow,
@@ -210,6 +213,7 @@ async function handleDownloadRequest(
             backgroundColor: { r: bgRgb.r / 255, g: bgRgb.g / 255, b: bgRgb.b / 255 }
           }),
           ...(includeFormatting && textRgb && outlineRgb && {
+            fontFamily,
             textColor: { r: textRgb.r / 255, g: textRgb.g / 255, b: textRgb.b / 255 },
             includeShadow,
             includeOutline,
@@ -247,6 +251,7 @@ async function handleDownloadRequest(
           ccliNumber: hymn.ccliNumber || undefined,
           copyrightYear: hymn.year || undefined,
           ...(includeFormatting && bgRgb && textRgb && outlineRgb && {
+            fontFamily,
             backgroundColor: { r: bgRgb.r / 255, g: bgRgb.g / 255, b: bgRgb.b / 255, a: 1 },
             textColor: { r: textRgb.r / 255, g: textRgb.g / 255, b: textRgb.b / 255, a: 1 },
             includeShadow,

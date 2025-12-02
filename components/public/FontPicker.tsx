@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import WebFont from 'webfontloader';
+import { IconStar, IconSearch } from '@tabler/icons-react';
 
 export interface FontOption {
   name: string;
@@ -102,20 +102,23 @@ export default function FontPicker({
     };
 
     fetchGoogleFonts();
-  }, [recommendedGoogleFonts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Load selected font if it's a Google Font
   useEffect(() => {
-    if (disabled) return;
+    if (disabled || typeof window === 'undefined') return;
 
     const fontName = selectedFont.replace(/['"]/g, '').split(',')[0].trim();
 
     // Check if it's a Google Font
     if (googleFonts.includes(fontName)) {
-      WebFont.load({
-        google: {
-          families: [fontName]
-        }
+      import('webfontloader').then((WebFont) => {
+        WebFont.default.load({
+          google: {
+            families: [fontName]
+          }
+        });
       });
     }
   }, [selectedFont, googleFonts, disabled]);
@@ -140,11 +143,13 @@ export default function FontPicker({
 
     // Load Google Font if needed
     const fontName = fontFamily.replace(/['"]/g, '').split(',')[0].trim();
-    if (googleFonts.includes(fontName)) {
-      WebFont.load({
-        google: {
-          families: [fontName]
-        }
+    if (googleFonts.includes(fontName) && typeof window !== 'undefined') {
+      import('webfontloader').then((WebFont) => {
+        WebFont.default.load({
+          google: {
+            families: [fontName]
+          }
+        });
       });
     }
   };
@@ -160,6 +165,9 @@ export default function FontPicker({
     { name: selectedFont.replace(/['"]/g, '').split(',')[0], family: selectedFont, category: 'google' as const };
 
   const selectedFontName = selectedFont.replace(/['"]/g, '').split(',')[0].trim();
+
+  // Check if selected font is a Google Font
+  const isGoogleFont = selectedFontOption.category === 'google' && googleFonts.includes(selectedFontName);
 
   return (
     <div className="space-y-3">
@@ -197,8 +205,9 @@ export default function FontPicker({
           <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto">
             {/* Recommended Custom Fonts */}
             <div className="border-b border-gray-200">
-              <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50">
-                ⭐ Recommended
+              <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 flex items-center gap-1">
+                <IconStar size={14} />
+                Recommended
               </div>
               {customFonts.map(font => (
                 <button
@@ -271,11 +280,29 @@ export default function FontPicker({
         </div>
       )}
 
+      {/* Download link for Google Fonts */}
+      {!disabled && isGoogleFont && (
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-gray-600">
+            Download this font to use in your presentations
+          </span>
+          <a
+            href={`https://fonts.google.com/specimen/${selectedFontName.replace(/\s+/g, '+')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-700 font-medium underline"
+          >
+            Download Font
+          </a>
+        </div>
+      )}
+
       {/* Google Font search */}
       {!disabled && (
         <details className="mt-2">
-          <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800 font-medium">
-            🔍 Search all Google Fonts
+          <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800 font-medium flex items-center gap-1">
+            <IconSearch size={16} />
+            Search all Google Fonts
           </summary>
           <div className="mt-3 space-y-2">
             <input
