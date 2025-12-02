@@ -149,7 +149,7 @@ export function generateProPresenter6Manual(
     groups.push({
       name: 'Intro',
       color: '0.7019607843137254 0.6588235294117647 0.1411764705882353 1',
-      slides: [{ lines: [hymnTitle], sectionType: 'title' } as Slide],
+      slides: [{ lines: [hymnTitle], sectionType: 'other' }],
     });
   }
 
