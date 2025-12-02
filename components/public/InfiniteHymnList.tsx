@@ -20,19 +20,27 @@ interface Hymn {
 
 interface InfiniteHymnListProps {
   initialHymns: Hymn[];
-  search: string;
-  tagSlug: string;
-  startsWith: string;
-  hasMore: boolean;
+  searchQuery?: string;
+  search?: string;
+  tagSlug?: string;
+  startsWith?: string;
+  hasMore?: boolean;
+  totalCount?: number;
+  experimentalMode?: boolean;
 }
 
 export default function InfiniteHymnList({
   initialHymns,
+  searchQuery,
   search,
   tagSlug,
   startsWith,
-  hasMore: initialHasMore,
+  hasMore: initialHasMore = false,
+  totalCount,
+  experimentalMode = false,
 }: InfiniteHymnListProps) {
+  // Use searchQuery if provided, otherwise use search
+  const actualSearch = searchQuery || search || '';
   const [hymns, setHymns] = useState<Hymn[]>(initialHymns);
   const [page, setPage] = useState(1);
   const [loadingDown, setLoadingDown] = useState(false);
@@ -101,7 +109,7 @@ export default function InfiniteHymnList({
     try {
       const params = new URLSearchParams({
         page: String(page + 1),
-        ...(search && { search }),
+        ...(actualSearch && { search: actualSearch }),
         ...(tagSlug && { tag: tagSlug }),
         ...(startsWith && { startsWith }),
       });
@@ -184,33 +192,56 @@ export default function InfiniteHymnList({
       {loadingUp && (
         <div className="flex flex-col items-center justify-center py-12">
           <div className="relative">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-blue-600 border-r-indigo-600 absolute top-0 left-0"></div>
+            <div className={experimentalMode
+              ? "animate-spin rounded-full h-16 w-16 border-4 border-white/10"
+              : "animate-spin rounded-full h-16 w-16 border-4 border-gray-200"
+            }></div>
+            <div className={experimentalMode
+              ? "animate-spin rounded-full h-16 w-16 border-4 border-t-violet-500 border-r-cyan-500 absolute top-0 left-0"
+              : "animate-spin rounded-full h-16 w-16 border-4 border-t-blue-600 border-r-indigo-600 absolute top-0 left-0"
+            }></div>
           </div>
-          <p className="mt-4 text-gray-600 font-medium">Loading previous hymns...</p>
+          <p className={experimentalMode
+            ? "mt-4 text-gray-400 font-medium"
+            : "mt-4 text-gray-600 font-medium"
+          }>Loading previous hymns...</p>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className={experimentalMode
+        ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
+        : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+      }>
         {hymns.map((hymn) => (
           <Link
             key={hymn.id}
             href={`/hymns/${hymn.id}`}
             data-hymn-title={hymn.catalogueTitle || hymn.title}
-            className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 p-8 block border border-gray-100 hover:border-blue-200 hover:-translate-y-2 relative overflow-hidden"
+            className={experimentalMode
+              ? "group bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-white/20 transition-all block"
+              : "group bg-white/80 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 p-8 block border border-gray-100 hover:border-blue-200 hover:-translate-y-2 relative overflow-hidden"
+            }
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-indigo-500/0 group-hover:from-blue-500/5 group-hover:to-indigo-500/5 transition-all duration-300"></div>
-            <div className="relative z-10">
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300">
+            {!experimentalMode && (
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-indigo-500/0 group-hover:from-blue-500/5 group-hover:to-indigo-500/5 transition-all duration-300"></div>
+            )}
+            <div className={experimentalMode ? "" : "relative z-10"}>
+              <h3 className={experimentalMode
+                ? "text-lg font-bold mb-2 group-hover:text-violet-400 transition-colors line-clamp-2"
+                : "text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300"
+              }>
                 {hymn.title}
               </h3>
               {hymn.author && (
-                <p className="text-gray-600 mb-4 font-medium flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
+                <p className={experimentalMode
+                  ? "text-sm text-gray-400"
+                  : "text-gray-600 mb-4 font-medium flex items-center gap-2"
+                }>
+                  {!experimentalMode && <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>}
                   {hymn.author}
                 </p>
               )}
-              {hymn.tags.length > 0 && (
+              {!experimentalMode && hymn.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {hymn.tags.slice(0, 3).map((ht) => (
                     <span
@@ -236,10 +267,19 @@ export default function InfiniteHymnList({
       {loadingDown && (
         <div className="flex flex-col items-center justify-center py-12">
           <div className="relative">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-blue-600 border-r-indigo-600 absolute top-0 left-0"></div>
+            <div className={experimentalMode
+              ? "animate-spin rounded-full h-16 w-16 border-4 border-white/10"
+              : "animate-spin rounded-full h-16 w-16 border-4 border-gray-200"
+            }></div>
+            <div className={experimentalMode
+              ? "animate-spin rounded-full h-16 w-16 border-4 border-t-violet-500 border-r-cyan-500 absolute top-0 left-0"
+              : "animate-spin rounded-full h-16 w-16 border-4 border-t-blue-600 border-r-indigo-600 absolute top-0 left-0"
+            }></div>
           </div>
-          <p className="mt-4 text-gray-600 font-medium">Loading more hymns...</p>
+          <p className={experimentalMode
+            ? "mt-4 text-gray-400 font-medium"
+            : "mt-4 text-gray-600 font-medium"
+          }>Loading more hymns...</p>
         </div>
       )}
 

@@ -4,7 +4,7 @@ import { prisma } from '@/lib/db/prisma';
 import SearchBar from '@/components/public/SearchBar';
 import { IconSettings, IconSearch, IconSparkles, IconApi, IconArrowRight, IconDownload, IconMusic } from '@tabler/icons-react';
 
-export default async function Home() {
+export default async function ExperimentalHome() {
   const [totalHymns, popularTags, mostPopularHymns, recentlyAddedHymns] = await Promise.all([
     prisma.hymn.count(),
     prisma.tag.findMany({

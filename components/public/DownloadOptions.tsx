@@ -32,6 +32,7 @@ interface DownloadOptionsProps {
   setOutlineColor: (value: string) => void;
   fontFamily: string;
   setFontFamily: (value: string) => void;
+  experimentalMode?: boolean;
 }
 
 export default function DownloadOptions({
@@ -59,7 +60,8 @@ export default function DownloadOptions({
   outlineColor,
   setOutlineColor,
   fontFamily,
-  setFontFamily
+  setFontFamily,
+  experimentalMode = false
 }: DownloadOptionsProps) {
   const [downloading, setDownloading] = useState(false);
   const [activeColorPicker, setActiveColorPicker] = useState<'background' | 'text' | 'outline' | null>(null);
@@ -180,8 +182,16 @@ export default function DownloadOptions({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 sticky top-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
+    <div
+      className={experimentalMode
+        ? "bg-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sticky top-24 [&_label]:text-gray-300 [&_input]:bg-white/10 [&_input]:text-white [&_input]:border-white/20 [&_select]:bg-white/10 [&_select]:text-white [&_select]:border-white/20 [&_button]:border-white/20 [&_h3]:text-white"
+        : "bg-white rounded-lg shadow p-6 sticky top-6"
+      }
+    >
+      <h2 className={experimentalMode
+        ? "text-2xl font-bold text-white mb-6"
+        : "text-2xl font-bold text-gray-900 mb-6"
+      }>
         Download Options
       </h2>
 

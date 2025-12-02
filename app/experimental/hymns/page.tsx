@@ -8,7 +8,7 @@ interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function HymnsPage({ searchParams }: PageProps) {
+export default async function ExperimentalHymnsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const searchQuery = typeof params.search === 'string' ? params.search : '';
   const tagSlug = typeof params.tag === 'string' ? params.tag : undefined;
@@ -89,8 +89,8 @@ export default async function HymnsPage({ searchParams }: PageProps) {
 
       {/* Floating Navigation */}
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full px-8 py-3 flex items-center gap-8">
-        <Link href="/" className="text-sm font-medium hover:text-violet-400 transition-colors">Home</Link>
-        <Link href="/hymns" className="text-sm font-medium text-violet-400">Browse</Link>
+        <Link href="/experimental" className="text-sm font-medium hover:text-violet-400 transition-colors">Home</Link>
+        <Link href="/experimental/hymns" className="text-sm font-medium text-violet-400">Browse</Link>
         <Link href="/admin" className="text-sm font-medium hover:text-violet-400 transition-colors">Admin</Link>
       </nav>
 
@@ -99,7 +99,7 @@ export default async function HymnsPage({ searchParams }: PageProps) {
         <div className="max-w-7xl mx-auto px-6">
           {/* Back Link */}
           <Link
-            href="/"
+            href="/experimental"
             className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors group"
           >
             <IconArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
@@ -144,7 +144,7 @@ export default async function HymnsPage({ searchParams }: PageProps) {
               </div>
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 <Link
-                  href="/hymns"
+                  href="/experimental/hymns"
                   className={`block px-4 py-2 rounded-lg transition-all ${
                     !tagSlug
                       ? 'bg-violet-500/20 text-white border border-violet-500/30'
@@ -156,7 +156,7 @@ export default async function HymnsPage({ searchParams }: PageProps) {
                 {allTags.map((tag) => (
                   <Link
                     key={tag.id}
-                    href={`/hymns?tag=${tag.slug}`}
+                    href={`/experimental/hymns?tag=${tag.slug}`}
                     className={`block px-4 py-2 rounded-lg transition-all ${
                       tagSlug === tag.slug
                         ? 'bg-violet-500/20 text-white border border-violet-500/30'
@@ -187,7 +187,7 @@ export default async function HymnsPage({ searchParams }: PageProps) {
                   : 'No hymns in this category.'}
               </p>
               <Link
-                href="/hymns"
+                href="/experimental/hymns"
                 className="inline-block bg-white text-black px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
               >
                 View All Hymns

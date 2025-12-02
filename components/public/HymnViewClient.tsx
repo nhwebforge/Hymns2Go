@@ -9,6 +9,7 @@ interface HymnViewClientProps {
   hymnId: string;
   hymnTitle: string;
   structure: HymnStructure;
+  experimentalMode?: boolean;
 }
 
 interface FormattingPreferences {
@@ -26,7 +27,8 @@ const PREFERENCES_KEY = 'hymns2go-formatting-preferences';
 export default function HymnViewClient({
   hymnId,
   hymnTitle,
-  structure
+  structure,
+  experimentalMode = false
 }: HymnViewClientProps) {
   const [linesPerSlide, setLinesPerSlide] = useState(2);
   const [includeVerseNumbers, setIncludeVerseNumbers] = useState(false);
@@ -141,6 +143,7 @@ export default function HymnViewClient({
           setIncludeOutline={setIncludeOutline}
           outlineColor={outlineColor}
           setOutlineColor={setOutlineColor}
+          experimentalMode={experimentalMode}
         />
       </div>
 
@@ -160,6 +163,7 @@ export default function HymnViewClient({
           includeShadow={includeFormatting && includeShadow}
           includeOutline={includeFormatting && includeOutline}
           outlineColor={outlineColor}
+          experimentalMode={experimentalMode}
         />
       </div>
     </div>

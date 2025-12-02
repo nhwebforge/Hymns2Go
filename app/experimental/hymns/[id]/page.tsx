@@ -5,7 +5,7 @@ import { HymnStructure } from '@/lib/hymn-processor/parser';
 import { IconArrowLeft, IconTag } from '@tabler/icons-react';
 import HymnViewClient from '@/components/public/HymnViewClient';
 
-export default async function HymnDetailPage({
+export default async function ExperimentalHymnDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -54,8 +54,8 @@ export default async function HymnDetailPage({
 
       {/* Floating Navigation */}
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full px-8 py-3 flex items-center gap-8">
-        <Link href="/" className="text-sm font-medium hover:text-violet-400 transition-colors">Home</Link>
-        <Link href="/hymns" className="text-sm font-medium hover:text-violet-400 transition-colors">Browse</Link>
+        <Link href="/experimental" className="text-sm font-medium hover:text-violet-400 transition-colors">Home</Link>
+        <Link href="/experimental/hymns" className="text-sm font-medium hover:text-violet-400 transition-colors">Browse</Link>
         <Link href="/admin" className="text-sm font-medium hover:text-violet-400 transition-colors">Admin</Link>
       </nav>
 
@@ -64,7 +64,7 @@ export default async function HymnDetailPage({
         <div className="max-w-7xl mx-auto px-6">
           {/* Back Link */}
           <Link
-            href="/hymns"
+            href="/experimental/hymns"
             className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors group"
           >
             <IconArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
@@ -131,7 +131,7 @@ export default async function HymnDetailPage({
                   {hymn.tags.map((ht) => (
                     <Link
                       key={ht.tag.id}
-                      href={`/hymns?tag=${ht.tag.slug}`}
+                      href={`/experimental/hymns?tag=${ht.tag.slug}`}
                       className="px-4 py-2 rounded-full font-medium bg-violet-500/20 text-violet-300 border border-violet-500/30 hover:bg-violet-500/30 transition-all"
                     >
                       {ht.tag.name}
